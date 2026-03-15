@@ -1,19 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
-public class GameBoard {
-
-    private int rows = 8;
-    private int columns = 8;
-
-    private ArrayList<String> minesLocation = new ArrayList<>(); // 2-2, 3-4, 2-1
+public class Events {
 
     private boolean flagEnabled = false;
     private JButton flagButton; // nút bật tắt cờ
     private boolean gameOver = false;
 
+    private Board gameBoard;
     private Tile[][] board;
+
+    public Events(Board board) {
+        this.gameBoard = board;
+        this.board = board.board;
+    }
+
+    public void setFlagButton(JButton button) {
+        this.flagButton = button;
+    }
 
     // ========================
     // Bật / tắt chế độ cờ
@@ -35,7 +39,7 @@ public class GameBoard {
     // ========================
     public void clickTile(Tile tile) {
 
-        if (gameOver || tile.getClientProperty("clicked") != null) return;
+        if (gameOver || tile.isRevealed()) return;
 
         // chế độ đặt cờ
         if (flagEnabled) {
@@ -51,23 +55,49 @@ public class GameBoard {
             return;
         }
 
-        String tileId = tile.id; // ví dụ "0-0"
+        int r = tile.row;
+        int c = tile.col;
 
         // trúng mìn
-        if (minesLocation.contains(tileId)) {
+        if (tile.isMine()) {
+
+            tile.setText("💣");
+            tile.setBackground(Color.RED);
+
             gameOver = true;
             revealMines();
+
             return;
         }
 
-        String[] coords = tileId.split("-");
-        int r = Integer.parseInt(coords[0]);
-        int c = Integer.parseInt(coords[1]);
+        // mở ô
+        gameBoard.revealTile(r, c);
 
-        checkMines(r, c);
+        updateBoard();
+    }
 
-        // đánh dấu đã click
-        tile.putClientProperty("clicked", true);
+    // cập nhật UI theo logic Board
+    public void updateBoard() {
+
+        for (int r = 0; r < gameBoard.rows; r++) {
+            for (int c = 0; c < gameBoard.columns; c++) {
+
+                Tile tile = board[r][c];
+
+                if (tile.isRevealed()) {
+
+                    tile.setEnabled(false);
+
+                    int mines = tile.getMinesAround();
+
+                    if (mines > 0) {
+                        tile.setText(String.valueOf(mines));
+                    }
+
+                }
+
+            }
+        }
     }
 
     // ========================
@@ -75,12 +105,12 @@ public class GameBoard {
     // ========================
     public void revealMines() {
 
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < columns; c++) {
+        for (int r = 0; r < gameBoard.rows; r++) {
+            for (int c = 0; c < gameBoard.columns; c++) {
 
                 Tile tile = board[r][c];
 
-                if (minesLocation.contains(tile.id)) {
+                if (tile.isMine()) {
 
                     tile.setText("💣");
                     tile.setBackground(Color.RED);
@@ -90,9 +120,5 @@ public class GameBoard {
         }
 
     }
-
-}
-
-void main() {
 
 }
