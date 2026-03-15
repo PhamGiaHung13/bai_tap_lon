@@ -1,4 +1,6 @@
-public class Tile {
+import javax.swing.*;
+
+public class Tile extends JButton {
 
     int row;
     int col;
@@ -11,6 +13,8 @@ public class Tile {
     public Tile(int r, int c) {
         this.row = r;
         this.col = c;
+
+        setText("");
     }
 
     public boolean isMine() {

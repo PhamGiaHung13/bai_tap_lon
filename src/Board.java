@@ -10,7 +10,6 @@ public class Board {
     boolean gameOver = false;
     int tilesClicked = 0;
 
-    // Constructor
     public Board() {
         initializeBoard();
         setMines();
@@ -89,7 +88,6 @@ public class Board {
         int minesAround = countMines(r, c);
         tile.setMinesAround(minesAround);
 
-        // Nếu không có mìn xung quanh → mở tiếp
         if (minesAround == 0) {
 
             for (int i = -1; i <= 1; i++) {
