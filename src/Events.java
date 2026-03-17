@@ -6,6 +6,7 @@ public class Events {
     private boolean flagEnabled = false;
     private JButton flagButton; // nút bật tắt cờ
     private boolean gameOver = false;
+    boolean chance = false;
 
     private Board gameBoard;
     private Tile[][] board;
@@ -60,6 +61,26 @@ public class Events {
 
         // trúng mìn
         if (tile.isMine()) {
+
+            int difficulty;
+
+            if(gameBoard.mode == 4){
+                difficulty = gameBoard.getDifficulty();
+            } else {
+                difficulty = gameBoard.mode;
+            }
+
+            if(!chance) {
+                MiniGames mini = new MiniGames(difficulty);
+                boolean survive = mini.playMiniGame();
+
+                chance = true;
+
+                if (survive) {
+                    System.out.println("Ban da duoc cuu");
+                    return;
+                }
+            }
 
             tile.setText("💣");
             tile.setBackground(Color.RED);
