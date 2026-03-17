@@ -2,10 +2,10 @@ import java.util.Random;
 
 public class MiniGames {
 
-    String difficulty;
+    int difficulty;
     Random rand = new Random();
 
-    public MiniGames(String difficulty){
+    public MiniGames(int difficulty){
         this.difficulty = difficulty;
     }
 
@@ -22,5 +22,38 @@ public class MiniGames {
         }
 
         return sudokuGame();
+    }
+
+    // ======================
+    // Chess puzzle
+    // ======================
+    boolean chessPuzzle(){
+
+        ChessPuzzle puzzle = new ChessPuzzle(difficulty);
+
+        // tạm thời auto thắng để test
+        return true;
+    }
+
+    // ======================
+    // Maze
+    // ======================
+    boolean mazeGame(){
+
+        MazeGame maze = new MazeGame(difficulty);
+
+        // tạm thời auto thắng
+        return true;
+    }
+
+    // ======================
+    // Sudoku
+    // ======================
+    boolean sudokuGame(){
+
+        SudokuGame sudoku = new SudokuGame(difficulty);
+
+        // tạm thời auto thắng
+        return true;
     }
 }
