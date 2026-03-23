@@ -3,9 +3,10 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        // Chạy UI trên Thread riêng của Swing để tránh lỗi xung đột
+        //chay tren Thread rieng cua swing
         SwingUtilities.invokeLater(() -> {
             new GameFrame();
         });
     }
+
 }

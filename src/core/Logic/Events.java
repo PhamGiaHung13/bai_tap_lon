@@ -1,6 +1,7 @@
 package core.Logic;
 
 import Controller.MiniGames;
+import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +23,31 @@ public class Events {
     public enum ClickResult{
         SAFE,
         MINE
+    }
+
+
+    private void revealWithTimer(int r, int c){
+        List<Tile> tilesToReveal = gameBoard.getRevealTiles(r, c);
+        javax.swing.Timer timer = new javax.swing.Timer(20, null);
+
+        timer.addActionListener(e -> {
+            if(tilesToReveal.isEmpty()){
+                timer.stop();
+                return;
+            }
+            Tile t = tilesToReveal.remove(0);
+
+            if(t.isRevealed()) return;
+
+            t.setRevealed(true);
+            t.setEnabled(false);
+
+            int mines = t.getMinesAround();
+
+            if(mines > 0) t.setText(String.valueOf(mines));
+            else t.setBackground(Color.WHITE);
+        });
+        timer.start();
     }
 
 
@@ -56,8 +82,8 @@ public class Events {
                 if (survive) {
                     System.out.println("ban da duoc cuu");
                     tile.setMine(false);//xoa min tai vi tri vua choi minigame
-                    gameBoard.revealTile(r,c);
-
+                    tile.setText("\uD83D\uDCA3");           //  💣
+                    revealWithTimer(r, c);
                     return ClickResult.SAFE;
                 }
             }
@@ -66,8 +92,8 @@ public class Events {
             return ClickResult.MINE;
         }
 
-        // mở ô
-        gameBoard.revealTile(r, c);
+        // mở ô - them hieu ung lan ra tu tu
+        revealWithTimer(r, c);
         return ClickResult.SAFE;
     }
 

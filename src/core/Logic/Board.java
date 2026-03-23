@@ -1,6 +1,6 @@
 package core.Logic;
 
-import java.util.Random;
+import java.util.*;
 
 public class Board {
 
@@ -150,35 +150,43 @@ public class Board {
     // 4. Mở ô
     // =========================
 
-    public void revealTile(int r, int c){
+    public List<Tile> getRevealTiles(int r, int c){
+        List<Tile> result = new ArrayList<>();
+        boolean[][] visited = new boolean[rows][columns];
 
-        if(r < 0 || r >= rows || c < 0 || c >= columns) return;
+        Queue<Tile> queue = new LinkedList<>();
+        queue.add(board[r][c]);
 
-        Tile tile = board[r][c];
+        while(!queue.isEmpty()){
+            Tile tile = queue.poll();
+            int row = tile.row, col = tile.col;
+            if(row < 0 || row >= rows || col < 0 || col >= columns) continue;
+            if(visited[row][col]) continue;
 
-        if(tile.isRevealed()) return;
+            visited[row][col] = true;
 
-        tile.setRevealed(true);
-        tilesClicked++;
+            int mines = countMines(row, col);
+            tile.setMinesAround(mines);
 
-        int minesAround = countMines(r, c);
-        tile.setMinesAround(minesAround);
+            result.add(tile);
 
-        if(minesAround == 0){
+            if(mines == 0){
+                for(int i=-1;i<=1;i++)
+                    for(int j=-1;j<=1;j++)
+                        if(i!=0 || j!=0){
+                            int nr = row + i;
+                            int nc = col + j;
 
-            for(int i = -1; i <= 1; i++){
-                for(int j = -1; j <= 1; j++){
+                            if(nr>=0 && nr<rows && nc>=0 && nc<columns)
+                                queue.add(board[nr][nc]);
+                        }
 
-                    if(i != 0 || j != 0){
-
-                        revealTile(r + i, c + j);
-
-                    }
-
-                }
             }
         }
+        return result;
     }
+
+
 
     // =========================
     // Lấy độ khó cho MiniGame

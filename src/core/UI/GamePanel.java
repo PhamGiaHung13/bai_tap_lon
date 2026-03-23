@@ -22,7 +22,7 @@ public class GamePanel extends JPanel {
         this.events = new Events(board);
         flagBtn = new JButton("🚩 FLAG");//🚩
 
-        setLayout(new BorderLayout());//layout theo huong
+        setLayout(new BorderLayout());//layout theo huong (N W S E)
 
         JPanel toolBar = new JPanel();//tao 1 panel toolbar chua flagBtn, ve sau co the add them thoi gian , so luong min cac thu
         toolBar.setBackground(Color.WHITE);
@@ -55,6 +55,7 @@ public class GamePanel extends JPanel {
 //                tile.setContentAreaFilled(false); // Dòng này cực quan trọng để màu setBackground hiện lên chuẩn nhất
 //                tile.setOpaque(true);
 
+                //hover
                 tile.addMouseListener(new java.awt.event.MouseAdapter() {
                     public void mouseEntered(java.awt.event.MouseEvent evt){
                          tile.setBackground(Color.WHITE);
@@ -63,10 +64,9 @@ public class GamePanel extends JPanel {
                     public void mouseExited(java.awt.event.MouseEvent evt){
                         if(!tile.isRevealed()) tile.setBackground(new JButton().getBackground());
                     }
-
-
                 });
 
+                //click
                 tile.addActionListener(e -> {
                     if(flagMode){
                         if(tile.getText().equals("")) tile.setText("🚩");
@@ -77,16 +77,16 @@ public class GamePanel extends JPanel {
                     Events.ClickResult result = events.clickTile(tile);
 
                     if(result == Events.ClickResult.MINE){
-                        tile.setText("💣"); //  💣
+                        tile.setText("💣");                              //  💣
                         new javax.swing.Timer(100,i ->{
                             tile.setBackground(tile.getBackground() == Color.RED ? Color.WHITE : Color.RED);
                             count[0]++;
                             if(count[0] >= 10) ((Timer)i.getSource()).stop();
-                        }).start();
+                        }).start();// hieu ung bom nhap nhay
 
-                        revealAllMines();
+                        revealAllMines();//hien tat ca bom khi thua
                     }
-                    updateUIBoard();
+                    updateUIBoard();//cap nhat board
                 });
 
                 boardPanel.add(tile);
@@ -101,7 +101,7 @@ public class GamePanel extends JPanel {
                 Tile tile = board.getTile(r, c);
 
                 if(tile.isMine()){
-                    tile.setText("\uD83D\uDCA3");
+                    tile.setText("\uD83D\uDCA3");     //  💣
                     tile.setBackground(Color.RED);
                 }
 
