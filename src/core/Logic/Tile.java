@@ -9,14 +9,14 @@ public class Tile extends JButton {
 
     boolean mine = false;
     boolean revealed = false;
-
+    boolean Flag  = false;
     int minesAround = 0;
 
     public Tile(int r, int c) {
         this.row = r;
         this.col = c;
 
-        setText("");
+        setFlagged(false);
     }
 
     public boolean isMine() {
@@ -42,4 +42,8 @@ public class Tile extends JButton {
     public int getMinesAround() {
         return minesAround;
     }
+
+    public boolean isFlagged(){return Flag;}
+
+    public void setFlagged(boolean flag){Flag = flag;}
 }

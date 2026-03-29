@@ -10,7 +10,7 @@ public class MenuPanel extends JPanel {
     public MenuPanel(GameFrame frame) {
 
         // load ảnh
-        background = new ImageIcon("src/Image/wtf8.png").getImage();
+        background = new ImageIcon("src/Image/1.png").getImage();
 
         setLayout(new GridBagLayout());
 

@@ -11,7 +11,7 @@ public class Board {
 
     public Tile[][] board;
 
-    boolean gameOver = false;
+    public boolean gameOver = false;
     int tilesClicked = 0;
 
     // ======================
@@ -27,9 +27,9 @@ public class Board {
         setMines();
     }
 
-    public Board() {
-        this(1);
-    }
+//    public Board() {
+//        this(1);
+//    }
 
     // ======================
     // Constructor custom
@@ -168,7 +168,7 @@ public class Board {
             int mines = countMines(row, col);
             tile.setMinesAround(mines);
 
-            result.add(tile);
+             result.add(tile);
 
             if(mines == 0){
                 for(int i=-1;i<=1;i++)
@@ -180,7 +180,6 @@ public class Board {
                             if(nr>=0 && nr<rows && nc>=0 && nc<columns)
                                 queue.add(board[nr][nc]);
                         }
-
             }
         }
         return result;
@@ -201,8 +200,15 @@ public class Board {
         return 3;                       // hard
     }
 
+    //lay tile
     public Tile getTile(int r, int c){
         return board[r][c];
     }
+
+    //check win
+    public boolean isWin(){
+        return tilesClicked == (rows * columns - minesCount);
+    }
+
 }
 
