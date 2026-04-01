@@ -27,9 +27,9 @@ public class Board {
         setMines();
     }
 
-//    public Board() {
-//        this(1);
-//    }
+    public Board() {
+        this(1);
+    }
 
     // ======================
     // Constructor custom
