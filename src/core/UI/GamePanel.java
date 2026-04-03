@@ -6,7 +6,10 @@ import core.Logic.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+
+import static javax.swing.BorderFactory.createEmptyBorder;
 
 
 ///   ------- LAYOUT PLAY GAME
@@ -39,9 +42,16 @@ public class GamePanel extends JPanel {
         setLayout(new BorderLayout());//layout theo huong (N W S E)
         this.setBackground(new Color(192, 192, 192));
         this.setBorder(BorderFactory.createCompoundBorder(
-                createThickFrame(true, 6), // Viền vát ngoài cùng
-                BorderFactory.createEmptyBorder(20, 20, 20, 20) // Đây chính là Margin tạo "khoảng không"
+                createThickFrame(true, 6),
+                createEmptyBorder(20, 20, 20, 20)
         ));
+
+        setPreferredSize(new Dimension(
+                board.columns * 40 + 100,
+                board.rows * 40 + 150
+        ));
+
+
 
 
         // ---------- 1.LABEL SO MIN CON LAI
@@ -53,8 +63,10 @@ public class GamePanel extends JPanel {
         minesLabel.setHorizontalAlignment(SwingConstants.CENTER);
         minesLabel.setPreferredSize(new Dimension(100, 50));
         minesLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3)
-                , BorderFactory.createEmptyBorder(5, 0, 0, 0))
+                , createEmptyBorder(5, 0, 0, 0))
         );
+
+
 
 
         //------- 2.BUTTON FACE ICON
@@ -83,6 +95,8 @@ public class GamePanel extends JPanel {
         centerPanel.add(faceBtn);
 
 
+
+
         //------ 3.TIMER
         timerLabel = new JLabel("000");
         timerLabel.setFont(new Font("Consolas", Font.BOLD, 32));
@@ -92,13 +106,18 @@ public class GamePanel extends JPanel {
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timerLabel.setPreferredSize(new Dimension(100, 50));
         timerLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3)
-                , BorderFactory.createEmptyBorder(5, 0, 0, 0))
+                , createEmptyBorder(5, 0, 0, 0))
         );
 
         gameTimer = new Timer(1000, e -> {
             time++;
             timerLabel.setText(String.format("%03d", time));
         });
+
+
+
+
+
 
 
         /// ---------- TOOLBAR PANEL
@@ -108,9 +127,9 @@ public class GamePanel extends JPanel {
         toolBar.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createCompoundBorder(
                         createThickFrame(false, 6), // Viền lõm của Toolbar
-                        BorderFactory.createEmptyBorder(10, 10, 10, 10) // Padding trong Toolbar
+                        createEmptyBorder(10, 10, 10, 10) // Padding trong Toolbar
                 ),
-                BorderFactory.createEmptyBorder(0, 0, 0, 0) // Margin DUOI
+                createEmptyBorder(0, 0, 0, 0) // Margin DUOI
         ));
 
 
@@ -119,12 +138,13 @@ public class GamePanel extends JPanel {
         toolBar.add(timerLabel, BorderLayout.EAST);
 
 
-        ///---------- layout BOARD(gridlayout la layout theo ma tran)
+
+        ///---------- layout BOARD (gridlayout la layout theo ma tran)
         boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(board.rows, board.columns));
         boardPanel.setBackground(new Color(192, 192, 192));
         boardPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(20, 0, 0, 0), // khoang cach
+                createEmptyBorder(20, 0, 0, 0), // khoang cach
                 createThickFrame(false, 6) // vien lom 6px
         ));
 
@@ -134,13 +154,14 @@ public class GamePanel extends JPanel {
         add(boardPanel, BorderLayout.CENTER);
 
 
-        ///-------- LISTENER RESIZE TILE THEO BOARD
-        // COMPONENT
+
+        //-------- LISTENER RESIZE TILE THEO BOARD
         boardPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent e) {
                 updateTileSize();
             }
         });
+
 
 
         ///------- FUNCTION PLAY GAME
@@ -152,17 +173,28 @@ public class GamePanel extends JPanel {
                 tile.setFocusPainted(false);
                 tile.setOpaque(true);
 
-                /// ----------------- GAMEPLAY
+                // ----------------- GAMEPLAY
                 addTileListener(tile);
                 boardPanel.add(tile);
             }
         }
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentResized(java.awt.event.ComponentEvent e) {
-                repaint();
-            }
-        });
+
+
+
+
+        // ------ ESC
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(
+            KeyStroke.getKeyStroke("ESCAPE"), "pauseGame"
+    );
+
+    getActionMap().put("pauseGame", new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            showPauseMenu();
+        }
+    });
+
+
 
         /// ---------
     }
@@ -173,7 +205,7 @@ public class GamePanel extends JPanel {
     ///  ----------------- TILE LISTENER
     private void addTileListener(Tile tile){
 
-        /// ------ MOUSE LISTENER
+        /// ------ MOUSE LISTENER - GAMEPLAY
         tile.addMouseListener(new java.awt.event.MouseAdapter(){
 
 
@@ -281,9 +313,13 @@ public class GamePanel extends JPanel {
 
 
 
+
+
+
     /// -----------  DRAW BORDER  --------
     private Border createThickFrame(boolean raised, int thickness) {
         return new javax.swing.border.AbstractBorder() {
+
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
                 Graphics2D g2 = (Graphics2D) g;
@@ -342,6 +378,9 @@ public class GamePanel extends JPanel {
     }
 
 
+
+
+
 ///---------- UPDATE MINELEFT ----
     private void updateMinesCounter(){
         int flags = 0;
@@ -351,6 +390,7 @@ public class GamePanel extends JPanel {
         int mineLeft = board.minesCount - flags;
         minesLabel.setText(String.format("%03d", mineLeft));
     }
+
 
 
     ///-------------- SCALE ICON (THAY DOI KICH THUOC)
@@ -378,7 +418,7 @@ public class GamePanel extends JPanel {
 
                 tile.setPreferredSize(new Dimension(tileSize, tileSize));
 
-                tile.setFont(new Font("Segoe UI", Font.BOLD, tileSize * 3/4));
+                tile.setFont(new Font("Segoe UI", Font.BOLD, tileSize / 3));
             }
         updateUIBoard();
     }
@@ -537,6 +577,80 @@ public class GamePanel extends JPanel {
 
 
 
+
+    /// --------- MENU BUTTON
+    private JButton createMenuButton(String text){
+        JButton btn = new JButton(text);
+        btn.setBackground(new Color(192, 192, 192));
+        btn.setFocusPainted(false);
+        btn.setBorder(createThickFrame(true, 1));
+        return btn;
+    }
+
+
+
+
+
+    ///  --------- PAUSE MENU
+
+    private void showPauseMenu(){
+        gameTimer.stop();
+        JDialog pauseDialog = new JDialog(
+                SwingUtilities.getWindowAncestor(this),
+                "Paused",
+                Dialog.ModalityType.APPLICATION_MODAL
+        );
+
+        pauseDialog.setSize(300, 300);
+        pauseDialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(3, 1, 10, 10));
+        panel.setBorder(BorderFactory.
+//                createThickFrame(false, 6),
+                createEmptyBorder(20, 20, 20, 20));
+
+
+        JButton resumeBtn = createMenuButton("Resume");
+        JButton menuBtn   = createMenuButton("Main Menu");
+        JButton exitBtn   = createMenuButton("Exit");
+
+
+        panel.add(resumeBtn);
+        panel.add(menuBtn);
+        panel.add(exitBtn);
+
+        pauseDialog.setContentPane(panel);
+
+        resumeBtn.addActionListener(e -> {
+            gameTimer.start();
+            pauseDialog.dispose();
+        });
+
+
+        menuBtn.addActionListener(e -> {
+            pauseDialog.dispose();
+
+            Window window = SwingUtilities.getWindowAncestor(this);
+            if(window instanceof GameFrame){
+                GameFrame frame = (GameFrame) window;
+                frame.showMenu();
+
+                frame.pack();           // reset size theo preferredSize
+                frame.setLocationRelativeTo(null);
+            }
+        });
+
+        exitBtn.addActionListener(e -> System.exit(0));
+
+        pauseDialog.setVisible(true);
+    }
+
+
+
+
+
+
     /// ---------- UPDATE BOARD
     public void updateUIBoard(){
         updateFace();
@@ -560,13 +674,13 @@ public class GamePanel extends JPanel {
                     if(tile.isMine()){
 
                         tile.setIcon(bombIcon);
-                        tile.setBorder(createThickFrame(false, 4));;
+                        tile.setBorder(BorderFactory.createLineBorder(Color.gray));
                         tile.setBackground(Color.LIGHT_GRAY);
 
 
                     //---- IF TILE NOT MINE
                     } else{
-                        tile.setBorder(createThickFrame(false, 4));
+                        tile.setBorder(BorderFactory.createLineBorder(Color.gray));
                         tile.setBackground(new Color(220,220,220));
 
                         int mines = tile.getMinesAround();

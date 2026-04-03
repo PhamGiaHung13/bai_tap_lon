@@ -7,15 +7,14 @@ import java.awt.event.MouseEvent;
 public class MenuPanel extends JPanel {
 
     private Image background;
-    private JLabel titleLabel = new JLabel();
-
-
-
+//    JLabel
 
 
 
 ///  ---------- CONSTRUCTOR
     public MenuPanel(GameFrame frame) {
+
+        setPreferredSize(new Dimension(1200, 700));
 
         // load ảnh
         background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
@@ -23,14 +22,6 @@ public class MenuPanel extends JPanel {
         setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
-
-//        titleLabel = new JLabel("HKL Minesweeper");
-//        titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
-//        titleLabel.setForeground(Color.black);
-//        titleLabel.setBorder(BorderFactory.createEmptyBorder(20,0,20,0));
-//
-//        gbc.gridy = 0;
-//        add(titleLabel, gbc);
 
 
 
@@ -58,7 +49,6 @@ public class MenuPanel extends JPanel {
 
 
 
-
         /// -----  DIFFICULTY
         playBtn.addActionListener(e ->{
             String[] options = {"Easy","Medium","Hard"};
@@ -73,8 +63,10 @@ public class MenuPanel extends JPanel {
         exitBtn.addActionListener(e -> System.exit(0));
 
 
+
         /// -----
     }
+
 
 
 
@@ -94,6 +86,8 @@ protected void paintComponent(Graphics g) {
     // ===== OVERLAY =====
     g.setColor(new Color(0, 0, 0, 50));
     g.fillRect(0, 0, w, h);
+
+
 
 
 
@@ -124,6 +118,8 @@ protected void paintComponent(Graphics g) {
     g2.setColor(Color.WHITE);
     g2.drawString(text, x, y);
 }
+
+
 
 
 
