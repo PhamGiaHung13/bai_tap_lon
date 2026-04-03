@@ -1,15 +1,16 @@
 package core.Logic;
 
-import Controller.MiniGames;
+import Controller.GameController;
 import java.util.List;
+import Controller.GameController;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Events {
 
-    private boolean gameOver = false;
     boolean chance = false;
+    private GameController controller;
 
     private Board gameBoard;
     private Tile[][] board;
@@ -19,14 +20,18 @@ public class Events {
         this.board = board.board;
     }
 
+    public void setController(GameController controller) {
+        this.controller = controller;
+    }
+
     //enumeration - liet ke trang thai
     public enum ClickResult{
         SAFE,
-        MINE
+        MINE,
+        CONTINUE;
     }
 
-
-    private void revealWithTimer(int r, int c){
+    private void revealWithTimer(int r, int c, Runnable onUpdate){
         List<Tile> tilesToReveal = gameBoard.getRevealTiles(r, c);
         javax.swing.Timer timer = new javax.swing.Timer(20, null);
 
@@ -37,15 +42,12 @@ public class Events {
             }
             Tile t = tilesToReveal.remove(0);
 
-            if(t.isRevealed()) return;
+            if(!t.isRevealed()) {
+                t.setRevealed(true);
+                gameBoard.tilesClicked++;//dem so o da mo
+                if(onUpdate != null) onUpdate.run();//callback function
+            }
 
-            t.setRevealed(true);
-            t.setEnabled(false);
-
-            int mines = t.getMinesAround();
-
-            if(mines > 0) t.setText(String.valueOf(mines));
-            else t.setBackground(Color.WHITE);
         });
         timer.start();
     }
@@ -55,47 +57,41 @@ public class Events {
     // Click vào ô
     // ========================
 
-    //chuyen thanh kieu enum ClickResult
-    public ClickResult clickTile(Tile tile) {
-        if (gameOver || tile.isRevealed()) return ClickResult.SAFE;
+    //su kien
+    public ClickResult clickTile(Tile tile, Runnable onUpdate) {
+        // 1. Kiểm tra trạng thái cơ bản
+        if (gameBoard.gameOver || tile.isRevealed()) return ClickResult.SAFE;
 
-        int r = tile.row;
-        int c = tile.col;
-
-        // trúng mìn
+        // 2. Xử lý khi đạp trúng mìn
         if (tile.isMine()) {
-
+            // LẤY ĐỘ KHÓ (DIFFICULTY) CHO MINIGAME
             int difficulty;
-
-            if(gameBoard.mode == 4){
+            if (gameBoard.mode == 4) {
+                // Nếu là Custom Mode: Tính dựa trên số lượng ô thực tế (Logic nằm trong Board)
                 difficulty = gameBoard.getDifficulty();
             } else {
+                // Nếu là Easy(1), Medium(2), Hard(3): Lấy trực tiếp Mode
                 difficulty = gameBoard.mode;
             }
+            // 3. XỬ LÝ HỒI SINH (SECOND CHANCE)
+            // Nếu chưa dùng chance và đã gắn Controller
+            if (!chance && controller != null) {
+                chance = true; // Đánh dấu đã dùng quyền trợ giúp
 
-            if(!chance) {
-                MiniGames mini = new MiniGames(difficulty);
-                boolean survive = mini.playMiniGame();
+                // Gửi độ khó đã tính toán ở trên vào Minigame
+                controller.startSecondChance(tile, difficulty);
 
-                chance = true;
-
-                if (survive) {
-                    System.out.println("ban da duoc cuu");
-                    tile.setMine(false);//xoa min tai vi tri vua choi minigame
-                    tile.setText("\uD83D\uDCA3");           //  💣
-                    revealWithTimer(r, c);
-                    return ClickResult.SAFE;
-                }
+                // Trả về SAFE để GamePanel không hiện hiệu ứng nổ bom ngay
+                return ClickResult.CONTINUE;
             }
 
-            gameOver = true;
+            // Nếu đã hết lượt hoặc ko có controller -> Chết thực sự
+            gameBoard.gameOver = true;
             return ClickResult.MINE;
         }
 
-        // mở ô - them hieu ung lan ra tu tu
-        revealWithTimer(r, c);
+        // 4. Nếu không trúng mìn -> Mở ô bình thường
+        revealWithTimer(tile.row, tile.col, onUpdate);
         return ClickResult.SAFE;
     }
-
-
 }
