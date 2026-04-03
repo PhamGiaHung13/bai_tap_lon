@@ -1,6 +1,6 @@
 package core.Logic;
 
-import Controller.MiniGames;
+import Controller.GameController;
 import java.util.List;
 
 import javax.swing.*;
@@ -12,16 +12,24 @@ public class Events {
 
     private Board gameBoard;
     private Tile[][] board;
+    private GameController controller;
 
     public Events(Board board) {
         this.gameBoard = board;
         this.board = board.board;
     }
 
+
+    /// ----
+     public void setController(GameController controller) {
+             this.controller = controller;
+     }
+
     //enumeration - liet ke trang thai
     public enum ClickResult{
         SAFE,
-        MINE
+        MINE,
+        CONTINUE;
     }
 
     private void revealWithTimer(int r, int c, Runnable onUpdate){
@@ -68,20 +76,15 @@ public class Events {
                 difficulty = gameBoard.mode;
             }
 
-//            //kiem tra de hoi sinh 1 lan duy nhat
-//            if(!chance){
-//                MiniGames mini = new MiniGames(difficulty);
-//                boolean survive = mini.playMiniGame();
-//
-//                chance = true;
-//
-//                if(survive){
-//                    System.out.println("ban da duoc cuu");
-//                    tile.setRevealed(true);
-//                    if(onUpdate != null) onUpdate.run();
-//                    return ClickResult.SAFE;
-//                }
-//            }
+            //kiem tra de hoi sinh 1 lan duy nhat
+            if(!chance && controller != null){
+
+                chance = true;
+
+                controller.startSecondChance(tile, difficulty);
+
+                return ClickResult.CONTINUE;
+            }
 
             gameBoard.gameOver = true;
             return ClickResult.MINE;

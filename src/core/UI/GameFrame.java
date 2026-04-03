@@ -12,6 +12,8 @@
         private JPanel mainPanel;
         private MenuPanel menuPanel;
         private GamePanel gamePanel;
+        private DifficultyPanel difficultyPanel;
+        private SettingsPanel settingsPanel;
 
 
 
@@ -20,20 +22,26 @@
 
         ///  --------------- CONSTRUCTOR
         public GameFrame() {
-            setTitle("HKL Minesweeper");//dat tieu de
-//            setSize(1200, 700);//kich thuoc cua so
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//an nut X thoat game(khong cho game chay ngam)
+            setTitle("HKL Minesweeper");//----- dat tieu de
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//--- an nut X thoat game(khong cho game chay ngam)
 
             cardLayout = new CardLayout();
             mainPanel = new JPanel(cardLayout);
 
             menuPanel = new MenuPanel(this);
+            difficultyPanel = new DifficultyPanel(this);
+            settingsPanel = new SettingsPanel(this);
+
+
             mainPanel.add(menuPanel, "MENU");
+            mainPanel.add(difficultyPanel, "DIFFICULTY");
+            mainPanel.add(settingsPanel, "SETTING");
+
             setContentPane(mainPanel);
 
-            pack();
-            setLocationRelativeTo(null);//can cua so ra giua man hinh
-            setVisible(true);//hien thi cua so khong cho no tang hinh
+            pack();// ---- lay size theo component no chua
+            setLocationRelativeTo(null);//--- can cua so ra giua man hinh
+            setVisible(true);// --- hien thi cua so khong cho no tang hinh
         }
 
 
@@ -84,6 +92,17 @@
 
             pack();
             setLocationRelativeTo(null);
+        }
+
+
+
+        /// --------- SHOW DIFFICULTY
+        public void showDifficulty(){
+            cardLayout.show(mainPanel, "DIFFICULTY");
+        }
+
+        public void showSetting(){
+            cardLayout.show(mainPanel, "SETTING");
         }
     
     }

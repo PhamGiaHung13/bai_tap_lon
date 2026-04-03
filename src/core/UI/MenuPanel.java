@@ -22,21 +22,25 @@ public class MenuPanel extends JPanel {
         setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các nút
 
+// Thêm khoảng trống phía trên để nhường chỗ cho TITLE (HKL MINESWEEPER)
+        gbc.gridy = 0;
+        add(Box.createVerticalStrut(95), gbc);
 
-//        //--------- BUTTON
+      //--------- BUTTON
         JButton playBtn = createGameButton("PLAY");
         gbc.gridy = 1;
         add(playBtn, gbc);
-//
+
         JButton settingBtn = createGameButton("Setting");
         gbc.gridy = 2;
         add(settingBtn, gbc);
-//
+
         JButton achievementsBtn = createGameButton("Achievements");
         gbc.gridy = 3;
         add(achievementsBtn, gbc);
-//
+
         JButton exitBtn = createGameButton("EXIT");
         gbc.gridy = 4;
         add(exitBtn, gbc);
@@ -45,17 +49,9 @@ public class MenuPanel extends JPanel {
 
 
 
-        /// -----  DIFFICULTY
-        playBtn.addActionListener(e ->{
-            String[] options = {"Easy","Medium","Hard"};
-
-            int choice = JOptionPane.showOptionDialog(this, "Choose difficulty", "Difficulty",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                    null, options, options[0]);
-            if(choice == 0) frame.startGame(1);
-            else if(choice == 1) frame.startGame(2);
-            else frame.startGame(3);
-        });
+        /// -----  PLAY -> DIFFICULTY PANEL
+        playBtn.addActionListener(e -> frame.showDifficulty());
+        settingBtn.addActionListener(e -> frame.showSetting());
         exitBtn.addActionListener(e -> System.exit(0));
 
 
@@ -80,7 +76,7 @@ protected void paintComponent(Graphics g) {
     g.drawImage(background, 0, 0, w, h, this);
 
     // ===== OVERLAY =====
-    g.setColor(new Color(0, 0, 0, 50));
+    g.setColor(new Color(0, 0, 0, 0));
     g.fillRect(0, 0, w, h);
 
 
@@ -111,7 +107,7 @@ protected void paintComponent(Graphics g) {
     g2.drawString(text, x + 3, y + 3);
 
     // main text
-    g2.setColor(Color.WHITE);
+    g2.setColor(new Color(220, 208, 48));
     g2.drawString(text, x, y);
 }
 
@@ -123,7 +119,7 @@ protected void paintComponent(Graphics g) {
         JButton btn = new JButton(text);
 
         btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        btn.setForeground(Color.WHITE);
+        btn.setForeground(new Color(60, 60, 60));
 
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
@@ -135,21 +131,17 @@ protected void paintComponent(Graphics g) {
         // hover + click effect
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
 
+
             public void mouseEntered(java.awt.event.MouseEvent e){
-                btn.setForeground(new Color(255, 220, 120)); // glow vàng
+                btn.setForeground(new Color(220, 208, 48));
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 32));
             }
 
             public void mouseExited(java.awt.event.MouseEvent e){
-                btn.setForeground(Color.WHITE);
+                btn.setForeground(new Color(60, 60, 60));
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
             }
 
-            public void mousePressed(MouseEvent e){
-                btn.setBorder(BorderFactory.createEmptyBorder(8, 10, 2, 10));
-            }
-
-            public void mouseReleased(MouseEvent e){
-                btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            }
         });
 
         return btn;

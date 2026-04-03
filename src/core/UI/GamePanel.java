@@ -1,5 +1,6 @@
 package core.UI;
 
+import Controller.GameController;
 import core.Logic.*;
 
 
@@ -29,6 +30,7 @@ public class GamePanel extends JPanel {
     Timer gameTimer;
     boolean started = false;
     boolean isHolding = false;
+    GameController controller;
 
 
 
@@ -63,7 +65,7 @@ public class GamePanel extends JPanel {
         minesLabel.setHorizontalAlignment(SwingConstants.CENTER);
         minesLabel.setPreferredSize(new Dimension(100, 50));
         minesLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3)
-                , createEmptyBorder(5, 0, 0, 0))
+                , createEmptyBorder(10, 0, 0, 0))
         );
 
 
@@ -106,7 +108,7 @@ public class GamePanel extends JPanel {
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timerLabel.setPreferredSize(new Dimension(100, 50));
         timerLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3)
-                , createEmptyBorder(5, 0, 0, 0))
+                , createEmptyBorder(10, 0, 0, 0))
         );
 
         gameTimer = new Timer(1000, e -> {
@@ -126,10 +128,10 @@ public class GamePanel extends JPanel {
         toolBar.setPreferredSize(new Dimension(0, 90));
         toolBar.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createCompoundBorder(
-                        createThickFrame(false, 6), // Viền lõm của Toolbar
-                        createEmptyBorder(10, 10, 10, 10) // Padding trong Toolbar
+                        createThickFrame(false, 6),
+                        createEmptyBorder(10, 10, 10, 10)
                 ),
-                createEmptyBorder(0, 0, 0, 0) // Margin DUOI
+                createEmptyBorder(0, 0, 0, 0)
         ));
 
 
@@ -511,35 +513,6 @@ public class GamePanel extends JPanel {
 
 
 
-    /// --------- FACE BUTTON RESTART GAME
-    private void restartGame(){
-        this.board = new Board(board.rows, board.columns, board.minesCount);
-        this.events = new Events(board);
-
-        gameTimer.stop();
-        time = 0;
-        started = false;
-        timerLabel.setText("000");
-
-        faceBtn.setIcon(smileIcon);
-
-        boardPanel.removeAll();
-
-        for(int r = 0; r < board.rows; r++){
-            for(int c = 0; c < board.columns; c++){
-
-                Tile tile = board.getTile(r,c);
-
-                tile.setFocusPainted(false);
-                tile.setOpaque(true);
-
-                addTileListener(tile);
-                boardPanel.add(tile);
-            }
-        }
-        updateUIBoard();
-
-    }
 
 
 
@@ -710,6 +683,56 @@ public class GamePanel extends JPanel {
             }
         boardPanel.revalidate();// ---- tinh toan lai bo cuc
         boardPanel.repaint();// ---- ve lai mau sac hinh anh
+    }
+
+
+
+
+
+    ///  --------- CONNECT CONTROLLER
+    public Board getBoard() {
+        return this.board;
+    }
+
+    public Events getEvents() {
+        return this.events;
+    }
+
+    // Hàm cực quan trọng để nối Controller
+    public void setController(GameController controller) {
+        this.controller = controller;
+        if(this.events != null) {
+            this.events.setController(controller);
+        }
+    }
+
+
+    /// --------- FACE BUTTON RESTART GAME
+    public void restartGame() {
+        this.board = new Board(board.rows, board.columns, board.minesCount);
+        this.events = new Events(board);
+
+        // NỐI LẠI CONTROLLER KHI CHƠI VÁN MỚI
+        if (this.controller != null) {
+            this.events.setController(this.controller);
+        }
+
+        gameTimer.stop();
+        time = 0;
+        started = false;
+        timerLabel.setText("000");
+        faceBtn.setIcon(smileIcon);
+        boardPanel.removeAll();
+
+        for (int r = 0; r < board.rows; r++) {
+            for (int c = 0; c < board.columns; c++) {
+                Tile tile = board.getTile(r, c);
+                addTileListener(tile);
+                boardPanel.add(tile);
+            }
+        }
+        updateTileSize();
+        updateUIBoard();
     }
 
 }
