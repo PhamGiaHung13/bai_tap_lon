@@ -404,19 +404,19 @@ public class GamePanel extends JPanel {
 
     /// --------- SET TILE SIZE THEO BOARD PANEL SIZE
     private void updateTileSize(){
-        tileSize = Math.min(boardPanel.getWidth() / board.columns,
-                            boardPanel.getHeight() / board.rows);
-        //--- SET IMAGE
-        bombIcon = getScaledIcon("src/Image/trump.png", tileSize); //💣
-        flagIcon = getScaledIcon("src/Image/flag.png", tileSize); //🚩
+        int w = boardPanel.getWidth();
+        int h = boardPanel.getHeight();
 
-        // --- TILE
+        tileSize = Math.min(w / board.columns,
+                h / board.rows);
+
+        // update icon
+        bombIcon = getScaledIcon("src/Image/trump.png", tileSize);
+        flagIcon = getScaledIcon("src/Image/flag.png", tileSize);
+
         for(int r = 0; r < board.rows; r++)
             for(int c = 0; c < board.columns; c++){
-
                 Tile tile = board.getTile(r, c);
-
-                tile.setPreferredSize(new Dimension(tileSize, tileSize));
 
                 tile.setFont(new Font("Segoe UI", Font.BOLD, tileSize / 3));
             }

@@ -51,18 +51,20 @@
             }
 
             gamePanel = new GamePanel(newBoard);
-
             mainPanel.add(gamePanel, "GAME");
             cardLayout.show(mainPanel, "GAME");
 
-
             int tileSize = 40;
 
-            int width = newBoard.columns * tileSize + 150;
-            int height = newBoard.rows * tileSize + 150;
+            int width = newBoard.columns * tileSize;
+            int height = newBoard.rows * tileSize;
 
-            setSize(width, height);   // ------ size board theo tile
+            // thêm UI
+            width += 120;
+            height += 180;
 
+            setSize(width, height);
+            setResizable(false);
             setLocationRelativeTo(null);
         }
 

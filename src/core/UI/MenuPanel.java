@@ -24,7 +24,6 @@ public class MenuPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
 
 
-
 //        //--------- BUTTON
         JButton playBtn = createGameButton("PLAY");
         gbc.gridy = 1;
@@ -41,9 +40,6 @@ public class MenuPanel extends JPanel {
         JButton exitBtn = createGameButton("EXIT");
         gbc.gridy = 4;
         add(exitBtn, gbc);
-
-
-        gbc.insets = new Insets(20, 20, 20, 20);
 
 
 
@@ -118,9 +114,6 @@ protected void paintComponent(Graphics g) {
     g2.setColor(Color.WHITE);
     g2.drawString(text, x, y);
 }
-
-
-
 
 
 
