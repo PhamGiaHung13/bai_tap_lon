@@ -18,26 +18,20 @@ public class ChessPuzzle {
             };
         }
         else if (difficulty == 2) {
-            /**
-             * MEDIUM (Ảnh 2): Mate in 2
-             * Trắng: Xe c5, Vua d3. Đen: Vua e1.
-             */
             solution = new String[][]{
-                    {"c5", "h5"},
-                    {"e1", "f1"},
-                    {"h5", "h1"}
+                    {"c4", "c5"},
+                    {"d6", "e6"},
+                    {"b6", "b3"}
             };
         }
         else {
-            /**
-             * HARD (Ảnh 3): Mate in 3
-             */
+
             solution = new String[][]{
-                    {"f5", "d6"},
-                    {"b8", "a8"},
-                    {"e5", "b8"},
-                    {"a8", "b8"},
-                    {"d7", "d8"}
+                    {"c1", "h1"},
+                    {"d8", "h4"},
+                    {"h1", "h2"},
+                    {"g3", "h2"},
+                    {"g2", "g4"}
             };
         }
     }
@@ -75,5 +69,9 @@ public class ChessPuzzle {
     public void reset() {
         step = 0;
         setupPuzzle();
+    }
+
+    public int getStep() {
+        return step;
     }
 }

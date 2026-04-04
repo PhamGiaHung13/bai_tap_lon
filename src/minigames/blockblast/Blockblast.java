@@ -14,7 +14,7 @@ public class Blockblast {
     int score = 0;//diem
 
     long startTime;//thoi gian bat dau
-    long timeLimit;//thoigian gioi han
+    long timeLimit;//thoi gian gioi han
 
     boolean gameOver = false;
     boolean win = false;

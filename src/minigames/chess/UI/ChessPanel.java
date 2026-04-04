@@ -1,6 +1,7 @@
 package minigames.chess.UI;
 
 import Controller.GameController;
+import minigames.MinigamePanel;
 import minigames.chess.Logic.ChessPuzzle;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,12 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.sound.sampled.*;
 
-public class ChessPanel extends JPanel {
+public class ChessPanel extends MinigamePanel {
 
     private ChessPuzzle puzzle;
     private int difficulty;
-    private GameController controller;
 
     private int selectedRow = -1;
     private int selectedCol = -1;
@@ -26,13 +27,13 @@ public class ChessPanel extends JPanel {
     private String[][] board = new String[8][8];
     private Image backgroundImage;
 
-    // Quản lý Timer trực tiếp tại đây
-    private int timeLeft = 300;
+    private int timeLeft = 180;
     private Timer countdown;
+    private final int SIDE_WIDTH = 320;
 
     public ChessPanel(int difficulty, GameController controller) {
+        super(controller);
         this.difficulty = difficulty;
-        this.controller = controller;
         this.puzzle = new ChessPuzzle(difficulty);
 
         loadResources();
@@ -42,176 +43,241 @@ public class ChessPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                // CHÚ Ý: Trừ đi 300px Sidebar bên phải khi tính toán vùng click bàn cờ
-                int sideWidth = 300;
-                int usableWidth = getWidth() - sideWidth;
-                int boardSize = Math.min(usableWidth, getHeight());
-                int xOffset = (usableWidth - boardSize) / 2;
-                int yOffset = (getHeight() - boardSize) / 2;
-                int dynamicCellSize = boardSize / 8;
+                if (isGameOver) return;
 
-                // Kiểm tra nếu click vào vùng nút "GIVE UP" ở Sidebar
-                if (e.getX() > getWidth() - 250 && e.getX() < getWidth() - 50 &&
-                        e.getY() > getHeight() - 100 && e.getY() < getHeight() - 50) {
-                    stopTimer();
-                    controller.onMinigameLose();
+                int usableWidth = getWidth() - SIDE_WIDTH - 60;
+                int usableHeight = getHeight() - 80;
+                int boardSize = (int) (Math.min(usableWidth, usableHeight) * 0.95);
+                int xOffset = (usableWidth - boardSize) / 2 + 30;
+                int yOffset = (getHeight() - boardSize) / 2;
+                int cellSize = boardSize / 8;
+
+                int btnW = 220, btnH = 60;
+                int btnX = getWidth() - SIDE_WIDTH + (SIDE_WIDTH - btnW) / 2;
+                int btnY = getHeight() - 120;
+
+                // Nút GIVE UP
+                if (e.getX() >= btnX && e.getX() <= btnX + btnW &&
+                        e.getY() >= btnY && e.getY() <= btnY + btnH) {
+                    handleLose();
                     return;
                 }
 
-                int col = (e.getX() - xOffset) / dynamicCellSize;
-                int row = (e.getY() - yOffset) / dynamicCellSize;
+                int col = (e.getX() - xOffset) / cellSize;
+                int row = (e.getY() - yOffset) / cellSize;
 
-                if (row < 0 || row >= 8 || col < 0 || col >= 8) return;
+                if (row < 0 || row >= 8 || col < 0 || col >= 8) {
+                    selectedRow = -1; selectedCol = -1;
+                    repaint(); return;
+                }
+
+                // Hủy chọn nếu nhấn lại ô cũ
+                if (row == selectedRow && col == selectedCol) {
+                    selectedRow = -1; selectedCol = -1;
+                    repaint(); return;
+                }
 
                 if (selectedRow == -1) {
                     if (board[row][col] != null && board[row][col].startsWith("w")) {
-                        selectedRow = row;
-                        selectedCol = col;
+                        selectedRow = row; selectedCol = col;
                     }
                 } else {
                     String from = toChess(selectedRow, selectedCol);
                     String to = toChess(row, col);
 
                     if (puzzle.playerMove(from, to)) {
-                        board[row][col] = board[selectedRow][selectedCol];
-                        board[selectedRow][selectedCol] = null;
+                        updateBoard(selectedRow, selectedCol, row, col);
+
+                        // Phát âm thanh theo kịch bản từng bước
+                        handlePuzzleSound(puzzle.getStep());
+
+                        repaint();
 
                         if (puzzle.isBlackTurn()) {
-                            String[] blackMove = puzzle.getBlackMove();
-                            int[] f = fromChess(blackMove[0]);
-                            int[] t = fromChess(blackMove[1]);
-                            board[t[0]][t[1]] = board[f[0]][f[1]];
-                            board[f[0]][f[1]] = null;
-                        }
+                            Timer aiDelay = new Timer(600, ev -> {
+                                String[] blackMove = puzzle.getBlackMove(); // Sau lệnh này step tăng (ví dụ từ 3 lên 4)
+                                if (blackMove != null) {
+                                    updateBoard(fromChess(blackMove[0])[0], fromChess(blackMove[0])[1],
+                                            fromChess(blackMove[1])[0], fromChess(blackMove[1])[1]);
 
-                        if (puzzle.isSolved()) {
-                            stopTimer();
-                            repaint();
-                            controller.onMinigameWin();
+                                    int s = puzzle.getStep(); // Lấy step mới nhất (bây giờ là 2 hoặc 4)
+
+                                    // KIỂM TRA RIÊNG CHO MÁY
+                                    if (difficulty == 3 && s == 4) {
+                                        playSound("Capture.wav"); // Địch ăn quân ở bước này!
+                                    } else {
+                                        playSound("Move.wav"); // Các bước khác máy chỉ di chuyển
+                                    }
+
+                                    if (puzzle.isSolved()) handleWin();
+                                    repaint();
+                                }
+                            });
+                            aiDelay.setRepeats(false); aiDelay.start();
+                        } else if (puzzle.isSolved()) {
+                            handleWin();
                         }
                     } else {
-                        stopTimer();
-                        controller.onMinigameLose();
+                        handleLose();
                     }
-                    selectedRow = -1;
-                    selectedCol = -1;
+                    selectedRow = -1; selectedCol = -1;
                 }
                 repaint();
             }
         });
     }
 
+    // Logic âm thanh cố định cho mỗi chế độ
+    private void handlePuzzleSound(int step) {
+        if (difficulty == 1) {
+            // Dif 1: 1 bước duy nhất là chiếu (Check)
+            playSound("Check.wav");
+        } else if (difficulty == 2) {
+            // Dif 2: Check (1) -> Move (2) -> Check (3)
+            if (step == 1 || step == 3) playSound("Check.wav");
+            else playSound("Move.wav");
+        } else {
+            if (step <= 3) playSound("Move.wav");
+            else playSound("Check.wav");
+        }
+    }
+
+    private void playSound(String fileName) {
+        new Thread(() -> {
+            try {
+                // Tự động đổi sang .wav nếu code gọi .mp3
+                String name = fileName.endsWith(".mp3") ? fileName.replace(".mp3", ".wav") : fileName;
+                File soundFile = new File("src/minigames/chess/" + name);
+
+                if (soundFile.exists()) {
+                    AudioInputStream ai = AudioSystem.getAudioInputStream(soundFile);
+                    Clip clip = AudioSystem.getClip();
+                    clip.open(ai);
+                    clip.start();
+                    // Giữ thread sống để clip kịp phát
+                    Thread.sleep(clip.getMicrosecondLength() / 1000 + 100);
+                } else {
+                    System.err.println("File not found: " + soundFile.getAbsolutePath());
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }).start();
+    }
+
+    @Override
+    protected void handleExit() {
+        if (isVictory) controller.onMinigameWin();
+        else controller.onMinigameLose();
+    }
+
+    private void handleWin() {
+        stopTimer();
+        isGameOver = true;
+        isVictory = true;
+        playSound("Checkmate.wav");
+        repaint();
+    }
+
+    private void handleLose() {
+        stopTimer();
+        isGameOver = true;
+        isVictory = false;
+        repaint();
+    }
+
+    private void updateBoard(int fR, int fC, int tR, int tC) {
+        board[tR][tC] = board[fR][fC];
+        board[fR][fC] = null;
+    }
+
     private void startTimer() {
         if (countdown != null) countdown.stop();
         countdown = new Timer(1000, e -> {
             timeLeft--;
-            if (timeLeft <= 0) {
-                stopTimer();
-                controller.onMinigameLose();
-            }
+            if (timeLeft <= 0) handleLose();
             repaint();
         });
         countdown.start();
     }
 
-    public void stopTimer() {
-        if (countdown != null) countdown.stop();
-    }
+    public void stopTimer() { if (countdown != null) countdown.stop(); }
 
     private void loadResources() {
         try {
             backgroundImage = ImageIO.read(new File("src/minigames/chess/bg.png"));
             boardImage = ImageIO.read(new File("src/minigames/chess/board.png"));
-            String[] types = {"wK", "wQ", "wR", "wB", "wN", "wP", "bK", "bQ", "bR", "bB", "bN", "bP"};
-            for (String type : types) {
-                pieceImages.put(type, ImageIO.read(new File("src/minigames/chess/" + type + ".png")));
-            }
-        } catch (IOException e) {
-            System.err.println("Lỗi nạp ảnh Chess: " + e.getMessage());
-        }
+            String[] pieces = {"wK","wQ","wR","wB","wN","wP","bK","bQ","bR","bB","bN","bP"};
+            for (String p : pieces) pieceImages.put(p, ImageIO.read(new File("src/minigames/chess/" + p + ".png")));
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void resetPosition() {
         puzzle.reset();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) board[i][j] = null;
-        }
-
+        for (int i=0; i<8; i++) for (int j=0; j<8; j++) board[i][j] = null;
         if (difficulty == 1) {
-            board[0][0] = "bK"; board[0][1] = "bR"; board[0][7] = "bR";
-            board[1][0] = "bP"; board[1][4] = "bB"; board[1][5] = "bQ";
-            board[2][2] = "bP"; board[3][3] = "wN"; board[6][2] = "bP";
-            board[6][3] = "wQ"; board[6][5] = "wB"; board[7][0] = "wK"; board[7][1] = "wR";
+            board[0][0]="bK"; board[0][1]="bR"; board[0][7]="bR"; board[1][0]="bP"; board[1][4]="bB";
+            board[1][5]="bQ"; board[2][2]="bP"; board[3][3]="wN"; board[6][2]="bP"; board[6][3]="wQ";
+            board[6][5]="wB"; board[7][0]="wK"; board[7][1]="wR";
         } else if (difficulty == 2) {
-            board[3][2] = "wR"; board[5][3] = "wK"; board[7][4] = "bK";
+            board[0][3]="bR"; board[1][3]="bB"; board[1][4]="bQ"; board[2][3]="bK"; board[2][2]="bP";
+            board[2][5]="bB"; board[3][4]="bP"; board[2][1]="wQ"; board[4][2]="wP"; board[4][4]="wB";
+            board[7][6]="wK"; board[6][5]="wP"; board[6][6]="wP";
         } else {
-            board[3][5] = "wN"; board[3][4] = "wQ"; board[1][3] = "wP";
-            board[0][1] = "bK"; board[0][6] = "bR";
+            board[3][5]="wK"; board[7][2]="wR"; board[6][6]="wP"; board[3][7]="bK"; board[0][3]="bB";
+            board[2][7]="bP"; board[5][6]="bP";
         }
     }
 
-    private String toChess(int row, int col) { return "" + (char) ('a' + col) + (8 - row); }
-    private int[] fromChess(String square) {
-        int col = square.charAt(0) - 'a';
-        int row = 8 - (square.charAt(1) - '0');
-        return new int[]{row, col};
-    }
+    private String toChess(int r, int c) { return "" + (char)('a'+c) + (8-r); }
+    private int[] fromChess(String s) { return new int[]{8-(s.charAt(1)-'0'), s.charAt(0)-'a'}; }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // 1. Vẽ Background toàn màn hình
-        if (backgroundImage != null) {
-            g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-        }
+        if (backgroundImage != null) g2.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRect(getWidth() - SIDE_WIDTH, 0, SIDE_WIDTH, getHeight());
 
-        // 2. Vẽ Sidebar (Vùng đen bên phải - 300px)
-        int sideWidth = 300;
-        g2d.setColor(new Color(0, 0, 0, 180));
-        g2d.fillRect(getWidth() - sideWidth, 0, sideWidth, getHeight());
+        drawChessUI(g2);
+        drawCommonOverlay(g2);
+    }
 
-        // Vẽ đồng hồ Timer lên Sidebar
-        g2d.setColor(Color.RED);
-        g2d.setFont(new Font("Monospaced", Font.BOLD, 55));
-        String timeStr = String.format("%02d:%02d", timeLeft / 60, timeLeft % 60);
-        g2d.drawString(timeStr, getWidth() - 260, 120);
+    private void drawChessUI(Graphics2D g2) {
+        int tx = getWidth() - SIDE_WIDTH + 30;
+        g2.setColor(new Color(20, 20, 20));
+        g2.fillRoundRect(tx, 40, 260, 110, 25, 25);
+        g2.setColor(new Color(255, 50, 50));
+        g2.setFont(new Font("Monospaced", Font.BOLD, 60));
+        g2.drawString(String.format("%02d:%02d", timeLeft/60, timeLeft%60), tx + 40, 115);
 
-        // Vẽ nút "GIVE UP" giả lập (Để tránh lỗi focus nút bấm)
-        g2d.setColor(new Color(150, 0, 0));
-        g2d.fillRoundRect(getWidth() - 250, getHeight() - 100, 200, 50, 15, 15);
-        g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font("Arial", Font.BOLD, 22));
-        g2d.drawString("GIVE UP", getWidth() - 195, getHeight() - 67);
+        int bx = getWidth() - SIDE_WIDTH + 50;
+        int by = getHeight() - 120;
+        g2.setColor(new Color(100, 0, 0)); g2.fillRoundRect(bx, by + 4, 220, 60, 20, 20);
+        g2.setColor(new Color(180, 0, 0)); g2.fillRoundRect(bx, by, 220, 60, 20, 20);
+        g2.setColor(Color.WHITE); g2.setFont(new Font("Arial", Font.BOLD, 24));
+        g2.drawString("GIVE UP", bx + 60, by + 38);
 
-        // 3. Tính toán vùng vẽ bàn cờ (Trừ đi Sidebar)
-        int usableWidth = getWidth() - sideWidth;
-        int boardSize = Math.min(usableWidth, getHeight());
-        int xOffset = (usableWidth - boardSize) / 2;
-        int yOffset = (getHeight() - boardSize) / 2;
-        int dynamicCellSize = boardSize / 8;
+        int boardSize = (int)(Math.min(getWidth() - SIDE_WIDTH - 60, getHeight() - 80) * 0.95);
+        int xo = (getWidth() - SIDE_WIDTH - 60 - boardSize)/2 + 30;
+        int yo = (getHeight() - boardSize)/2;
+        int cs = boardSize / 8;
 
-        if (boardImage != null) {
-            g2d.drawImage(boardImage, xOffset, yOffset, boardSize, boardSize, null);
-        }
+        if (boardImage != null) g2.drawImage(boardImage, xo, yo, boardSize, boardSize, null);
 
-        // 4. Vẽ quân cờ
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                int x = xOffset + c * dynamicCellSize;
-                int y = yOffset + r * dynamicCellSize;
-
+        for (int r=0; r<8; r++) {
+            for (int c=0; c<8; c++) {
                 if (r == selectedRow && c == selectedCol) {
-                    g2d.setColor(new Color(186, 202, 68, 180));
-                    g2d.fillRect(x, y, dynamicCellSize, dynamicCellSize);
+                    g2.setColor(new Color(186, 202, 68, 180));
+                    g2.fillRect(xo + c*cs, yo + r*cs, cs, cs);
                 }
-
-                String pieceType = board[r][c];
-                if (pieceType != null && pieceImages.containsKey(pieceType)) {
-                    g2d.drawImage(pieceImages.get(pieceType), x + 5, y + 5,
-                            dynamicCellSize - 10, dynamicCellSize - 10, null);
+                String p = board[r][c];
+                if (p != null) {
+                    int ps = (int)(cs * 0.85);
+                    g2.drawImage(pieceImages.get(p), xo + c*cs + (cs-ps)/2, yo + r*cs + (cs-ps)/2, ps, ps, null);
                 }
             }
         }
