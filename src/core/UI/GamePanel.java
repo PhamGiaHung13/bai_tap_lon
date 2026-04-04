@@ -177,6 +177,7 @@ public class GamePanel extends JPanel {
 
                 Tile tile = board.getTile(r, c);
 
+                setFocusable(false);
                 tile.setFocusPainted(false);
                 tile.setOpaque(true);
 
