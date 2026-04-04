@@ -829,9 +829,6 @@ public class GamePanel extends JPanel {
         return this.board;
     }
 
-    public Events getEvents() {
-        return this.events;
-    }
 
     // Hàm cực quan trọng để nối Controller
     public void setController(GameController controller) {
@@ -842,7 +839,7 @@ public class GamePanel extends JPanel {
     }
 
 
-    /// --------- FACE BUTTON RESTART GAME
+    /// --------- RESTART GAME
     public void restartGame() {
         this.board = new Board(board.rows, board.columns, board.minesCount);
         this.events = new Events(board);

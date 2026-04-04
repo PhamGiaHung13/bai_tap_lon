@@ -26,7 +26,7 @@ public class Events {
     }
 
 
-    /// ----
+    /// ---- SET CONTROLLER
      public void setController(GameController controller) {
              this.controller = controller;
      }
@@ -123,15 +123,15 @@ public class Events {
 
         // 🎧 SOUND + REVEAL
         if(tile.getMinesAround() > 0){
-            // 👉 Ô đơn
+
             tile.setRevealed(true);
             gameBoard.tilesClicked++;
 
             SoundManager.play("src/Sound/reveal" + tile.getMinesAround() + ".wav");
 
             if(onUpdate != null) onUpdate.run();
+
         } else {
-            // 👉 Lan
             revealWithTimer(r, c, onUpdate);
         }
 
