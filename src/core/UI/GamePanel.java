@@ -300,7 +300,7 @@ public class GamePanel extends JPanel {
                     events.stopAllTimers();
                 }
 
-                SoundManager.play("src/Sound/mine.wav");
+                SoundManager.play("src/Sound/DRAGONBOMB.wav");
 
                 new javax.swing.Timer(100,i ->{
                     tile.setBackground(tile.getBackground() == Color.RED ? Color.WHITE : Color.RED);
