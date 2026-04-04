@@ -1,5 +1,7 @@
 package core.UI;
 
+import core.Audio.SoundManager;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -55,7 +57,10 @@ public class AchievementsPanel extends JPanel {
         gbc.insets = new Insets(30, 0, 10, 0);
         glassBox.add(backBtn, gbc);
 
-        backBtn.addActionListener(e -> frame.showMenu());
+        backBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            frame.showMenu();
+        });
 
         add(glassBox);
     }

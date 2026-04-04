@@ -28,6 +28,18 @@
             setTitle("HKL Minesweeper");//----- dat tieu de
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//--- an nut X thoat game(khong cho game chay ngam)
 
+            try {
+                // Cách này giúp Java tìm ảnh ngay trong classpath
+                java.net.URL iconURL = getClass().getResource("/Image/favmine.png");
+                if (iconURL != null) {
+                    ImageIcon icon = new ImageIcon(iconURL);
+                    this.setIconImage(icon.getImage());
+                }
+            } catch (Exception e) {
+                System.out.println("Không nạp được favicon: " + e.getMessage());
+            }
+
+
             cardLayout = new CardLayout();
             mainPanel = new JPanel(cardLayout);
 

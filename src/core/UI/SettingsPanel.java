@@ -26,6 +26,7 @@ public class SettingsPanel extends JPanel {
         soundToggle.setForeground(Color.BLACK);
         soundToggle.setFont(new Font("Arial", Font.BOLD, 25));
         soundToggle.setOpaque(false);
+        soundToggle.setFocusable(false);
         soundToggle.setSelected(Settings.soundEnabled);
 
         // --- SOUND EFFECTS (SFX) Slider

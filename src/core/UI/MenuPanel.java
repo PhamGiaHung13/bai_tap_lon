@@ -17,13 +17,8 @@ public class MenuPanel extends JPanel {
     public MenuPanel(GameFrame frame) {
 
         setPreferredSize(new Dimension(1200, 700));
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
 
-
-
-        // ---------- BACKGROUND
+        // ----- BACKGROUND
         background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
 
         // ----- MUSIC
@@ -31,6 +26,9 @@ public class MenuPanel extends JPanel {
 
 
 
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các nút
 
 // Thêm khoảng trống phía trên để nhường chỗ cho TITLE (HKL MINESWEEPER)
         gbc.gridy = 0;
