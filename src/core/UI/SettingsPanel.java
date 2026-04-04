@@ -2,6 +2,7 @@ package core.UI;
 
 import core.Config.Settings;
 
+import javax.sound.midi.VoiceStatus;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
