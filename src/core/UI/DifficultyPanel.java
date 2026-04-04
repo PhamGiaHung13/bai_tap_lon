@@ -1,5 +1,7 @@
 package core.UI;
 
+import core.Audio.SoundManager;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -50,10 +52,24 @@ public class DifficultyPanel extends JPanel {
 
 
         // ------- ACTION LISTENER
-        easy.addActionListener(e -> frame.startGame(1));
-        medium.addActionListener(e -> frame.startGame(2));
-        hard.addActionListener(e -> frame.startGame(3));
-        back.addActionListener(e -> frame.showMenu());
+        easy.addActionListener(e -> {
+            SoundManager.play("src/Sound/start.wav");
+            frame.startGame(1);
+
+        });
+        medium.addActionListener(e ->{
+            SoundManager.play("src/Sound/start.wav");
+            frame.startGame(2);
+        });
+
+        hard.addActionListener(e ->{
+            SoundManager.play("src/Sound/start.wav");
+            frame.startGame(3);
+        });
+        back.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            frame.showMenu();
+        });
 
     }
 
@@ -81,6 +97,7 @@ public class DifficultyPanel extends JPanel {
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
 
             public void mouseEntered(java.awt.event.MouseEvent e){
+                SoundManager.play("src/Sound/menu_hover.wav");
                 btn.setForeground(new Color(191, 178, 21)); // glow vàng
             }
 

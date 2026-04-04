@@ -1,6 +1,8 @@
     package core.UI;
     import javax.swing.*;
 
+    import Controller.GameController;
+    import core.Audio.SoundManager;
     import core.Logic.Board;
 
     import java.awt.*;
@@ -14,7 +16,8 @@
         private GamePanel gamePanel;
         private DifficultyPanel difficultyPanel;
         private SettingsPanel settingsPanel;
-
+        private AchievementsPanel achievementsPanel;
+        private GameController gameController;
 
 
 
@@ -31,11 +34,14 @@
             menuPanel = new MenuPanel(this);
             difficultyPanel = new DifficultyPanel(this);
             settingsPanel = new SettingsPanel(this);
+            achievementsPanel = new AchievementsPanel(this);
 
 
             mainPanel.add(menuPanel, "MENU");
             mainPanel.add(difficultyPanel, "DIFFICULTY");
             mainPanel.add(settingsPanel, "SETTING");
+            mainPanel.add(achievementsPanel, "ACHIEVEMENTS");
+
 
             setContentPane(mainPanel);
 
@@ -51,7 +57,7 @@
 
         /// ----------- START GAME
         public void startGame(int mode) {
-
+            SoundManager.stopBGM();
             Board newBoard = new Board(mode);
 
             if(gamePanel != null){
@@ -59,6 +65,9 @@
             }
 
             gamePanel = new GamePanel(newBoard);
+
+            gameController = new GameController(this, gamePanel);
+
             mainPanel.add(gamePanel, "GAME");
             cardLayout.show(mainPanel, "GAME");
 
@@ -85,13 +94,16 @@
                 gamePanel = null;
             }
 
+
             cardLayout.show(mainPanel, "MENU");
+
 
             mainPanel.revalidate();
             mainPanel.repaint();
 
             pack();
             setLocationRelativeTo(null);
+
         }
 
 
@@ -104,5 +116,9 @@
         public void showSetting(){
             cardLayout.show(mainPanel, "SETTING");
         }
-    
+
+        public void showAchievements() {
+            cardLayout.show(mainPanel, "ACHIEVEMENTS");
+        }
+
     }

@@ -1,5 +1,7 @@
 package core.UI;
 
+import core.Audio.SoundManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -15,14 +17,20 @@ public class MenuPanel extends JPanel {
     public MenuPanel(GameFrame frame) {
 
         setPreferredSize(new Dimension(1200, 700));
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        // load ảnh
+
+
+        // ---------- BACKGROUND
         background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
 
-        setLayout(new GridBagLayout());
+        // ----- MUSIC
+        SoundManager.playBGM("src/Sound/music.wav");
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các nút
+
+
 
 // Thêm khoảng trống phía trên để nhường chỗ cho TITLE (HKL MINESWEEPER)
         gbc.gridy = 0;
@@ -50,9 +58,23 @@ public class MenuPanel extends JPanel {
 
 
         /// -----  PLAY -> DIFFICULTY PANEL
-        playBtn.addActionListener(e -> frame.showDifficulty());
-        settingBtn.addActionListener(e -> frame.showSetting());
-        exitBtn.addActionListener(e -> System.exit(0));
+        playBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            frame.showDifficulty();
+        });
+        settingBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            frame.showSetting();
+        });
+        achievementsBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+
+            frame.showAchievements();
+        });
+        exitBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            System.exit(0);
+        });
 
 
 
@@ -133,6 +155,7 @@ protected void paintComponent(Graphics g) {
 
 
             public void mouseEntered(java.awt.event.MouseEvent e){
+                SoundManager.play("src/Sound/menu_hover.wav");
                 btn.setForeground(new Color(220, 208, 48));
                 btn.setFont(new Font("Segoe UI", Font.BOLD, 32));
             }

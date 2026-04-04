@@ -1,6 +1,8 @@
 package core.Logic;
 
 import Controller.GameController;
+import core.Audio.SoundManager;
+
 import java.util.List;
 
 import javax.swing.*;
@@ -13,6 +15,10 @@ public class Events {
     private Board gameBoard;
     private Tile[][] board;
     private GameController controller;
+    private Timer revealTimer;
+
+
+
 
     public Events(Board board) {
         this.gameBoard = board;
@@ -33,24 +39,44 @@ public class Events {
     }
 
     private void revealWithTimer(int r, int c, Runnable onUpdate){
-        List<Tile> tilesToReveal = gameBoard.getRevealTiles(r, c);
-        javax.swing.Timer timer = new javax.swing.Timer(20, null);
 
-        timer.addActionListener(e -> {
-            if(tilesToReveal.isEmpty()){
-                timer.stop();
+        List<Tile> tilesToReveal = gameBoard.getRevealTiles(r, c);
+        final int[] revealedCount = {0};
+
+        revealTimer = new Timer(90, null);
+
+        revealTimer.addActionListener(e -> {
+
+            if(gameBoard.gameOver || tilesToReveal.isEmpty()){
+                revealTimer.stop();
                 return;
             }
+
+
             Tile t = tilesToReveal.remove(0);
 
             if(!t.isRevealed()) {
                 t.setRevealed(true);
-                gameBoard.tilesClicked++;//dem so o da mo
-                if(onUpdate != null) onUpdate.run();//callback function
-            }
+                gameBoard.tilesClicked++;
 
+                revealedCount[0]++;
+
+                int index = Math.min(revealedCount[0], 8);
+                SoundManager.play("src/Sound/reveal" + index + ".wav");
+
+                if(onUpdate != null) onUpdate.run();
+            }
         });
-        timer.start();
+
+        revealTimer.start();
+    }
+
+
+    ///  ---- STOP TIMER
+    public void stopAllTimers(){
+        if(revealTimer != null){
+            revealTimer.stop();
+        }
     }
 
 
@@ -67,6 +93,11 @@ public class Events {
 
         // neu dam phai min , start random minigame
         if (tile.isMine()) {
+
+            stopAllTimers();
+
+            tile.setRevealed(true);
+            if (onUpdate != null) onUpdate.run();
 
             int difficulty;
             //do kho cho minigame
@@ -90,9 +121,22 @@ public class Events {
             return ClickResult.MINE;
         }
 
-        // mở ô - them hieu ung lan ra tu tu
-        revealWithTimer(r, c, onUpdate);
+        // 🎧 SOUND + REVEAL
+        if(tile.getMinesAround() > 0){
+            // 👉 Ô đơn
+            tile.setRevealed(true);
+            gameBoard.tilesClicked++;
+
+            SoundManager.play("src/Sound/reveal" + tile.getMinesAround() + ".wav");
+
+            if(onUpdate != null) onUpdate.run();
+        } else {
+            // 👉 Lan
+            revealWithTimer(r, c, onUpdate);
+        }
+
         return ClickResult.SAFE;
+
     }
 
 

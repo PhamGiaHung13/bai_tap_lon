@@ -76,7 +76,7 @@ public class GameController {
 
     public void onMinigameWin() {
         if (currentBombTile != null) {
-            currentBombTile.setMine(false);
+//            currentBombTile.setMine(true);
             currentBombTile.setRevealed(true);
         }
         backToMines();

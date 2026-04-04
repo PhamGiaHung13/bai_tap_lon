@@ -120,11 +120,11 @@ public class ChessPanel extends JPanel {
 
     private void loadResources() {
         try {
-            backgroundImage = ImageIO.read(new File("src/minigames/chess/bg.png"));
-            boardImage = ImageIO.read(new File("src/minigames/chess/board.png"));
+            backgroundImage = ImageIO.read(new File("src/minigames/chess/Images/bg.png"));
+            boardImage = ImageIO.read(new File("src/minigames/chess/Images/board.png"));
             String[] types = {"wK", "wQ", "wR", "wB", "wN", "wP", "bK", "bQ", "bR", "bB", "bN", "bP"};
             for (String type : types) {
-                pieceImages.put(type, ImageIO.read(new File("src/minigames/chess/" + type + ".png")));
+                pieceImages.put(type, ImageIO.read(new File("src/minigames/chess/Images/" + type + ".png")));
             }
         } catch (IOException e) {
             System.err.println("Lỗi nạp ảnh Chess: " + e.getMessage());

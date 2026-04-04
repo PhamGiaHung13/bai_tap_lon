@@ -1,6 +1,7 @@
 package core.UI;
 
 import Controller.GameController;
+import core.Audio.SoundManager;
 import core.Logic.*;
 
 
@@ -44,7 +45,7 @@ public class GamePanel extends JPanel {
         setLayout(new BorderLayout());//layout theo huong (N W S E)
         this.setBackground(new Color(192, 192, 192));
         this.setBorder(BorderFactory.createCompoundBorder(
-                createThickFrame(true, 6),
+                createThickFrame(true, 6, Color.WHITE, new Color(128,128,128)),
                 createEmptyBorder(20, 20, 20, 20)
         ));
 
@@ -64,7 +65,7 @@ public class GamePanel extends JPanel {
         minesLabel.setOpaque(true);
         minesLabel.setHorizontalAlignment(SwingConstants.CENTER);
         minesLabel.setPreferredSize(new Dimension(100, 50));
-        minesLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3)
+        minesLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3, new Color(128,128,128), Color.WHITE)
                 , createEmptyBorder(10, 0, 0, 0))
         );
 
@@ -75,7 +76,7 @@ public class GamePanel extends JPanel {
         faceBtn = new JButton();
         faceBtn.setFocusPainted(false);
         faceBtn.setBackground(new Color(192, 192, 192));
-        faceBtn.setBorder(createThickFrame(true, 4));
+        faceBtn.setBorder(createThickFrame(true, 4, Color.WHITE, new Color(128,128,128)));
         faceBtn.setPreferredSize(new Dimension(200, 60));
 
         smileIcon = getScaledIcon("src/Image/smile.png", 40);
@@ -84,10 +85,14 @@ public class GamePanel extends JPanel {
 
         faceBtn.setIcon(smileIcon);
         faceBtn.addActionListener(e -> {
-            faceBtn.setBorder(createThickFrame(false, 4));
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            faceBtn.setBorder(createThickFrame(false, 4, new Color(128,128,128) , Color.WHITE));
+            if(events != null){
+                events.stopAllTimers();
+            }
             new Timer(100, ev ->{
                 restartGame();
-                faceBtn.setBorder(createThickFrame(true, 4));
+                faceBtn.setBorder(createThickFrame(true, 4, Color.WHITE, new Color(128,128,128)));
                 ((Timer) ev.getSource()).stop();
             }).start();
         });
@@ -107,7 +112,7 @@ public class GamePanel extends JPanel {
         timerLabel.setOpaque(true);
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timerLabel.setPreferredSize(new Dimension(100, 50));
-        timerLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3)
+        timerLabel.setBorder(BorderFactory.createCompoundBorder(createThickFrame(false, 3 , new Color(128,128,128) ,Color.WHITE)
                 , createEmptyBorder(10, 0, 0, 0))
         );
 
@@ -128,7 +133,7 @@ public class GamePanel extends JPanel {
         toolBar.setPreferredSize(new Dimension(0, 90));
         toolBar.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createCompoundBorder(
-                        createThickFrame(false, 6),
+                        createThickFrame(false, 6, new Color(128,128,128), Color.WHITE),
                         createEmptyBorder(10, 10, 10, 10)
                 ),
                 createEmptyBorder(0, 0, 0, 0)
@@ -147,7 +152,7 @@ public class GamePanel extends JPanel {
         boardPanel.setBackground(new Color(192, 192, 192));
         boardPanel.setBorder(BorderFactory.createCompoundBorder(
                 createEmptyBorder(20, 0, 0, 0), // khoang cach
-                createThickFrame(false, 6) // vien lom 6px
+                createThickFrame(false, 6 , new Color(128,128,128) ,Color.WHITE) // vien lom 6px
         ));
 
 
@@ -192,6 +197,7 @@ public class GamePanel extends JPanel {
     getActionMap().put("pauseGame", new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
+            SoundManager.play("src/Sound/pause_menu.wav");
             showPauseMenu();
         }
     });
@@ -226,6 +232,7 @@ public class GamePanel extends JPanel {
                 //--- PUT FLAG (RIGHT CLICK)
                 if(SwingUtilities.isRightMouseButton(e)) {
                     if(tile.isRevealed()) return;
+                    SoundManager.play("src\\Sound\\flag_melee_var1_02.wav");
                     tile.setFlagged(!tile.isFlagged());
                     updateUIBoard();
                 }
@@ -263,12 +270,9 @@ public class GamePanel extends JPanel {
         //------- ACTION LISTENER (click)
         tile.addActionListener(e -> {
 
-            if(!started){
-                gameTimer.start();
-                started = true;
-            }
 
-            if(board.gameOver || tile.isFlagged()){
+            // ----- VO HIEU HOA  CLICK
+            if(board.gameOver || tile.isFlagged() || board.isWin()){
                 return;
             }
 
@@ -279,8 +283,11 @@ public class GamePanel extends JPanel {
                 //----- WIN
                 if(board.isWin()){
                     gameTimer.stop();
+
+
+                    SoundManager.play("src/Sound/win_victory.wav");
                     playWinAnimation();
-                    JOptionPane.showMessageDialog(this, "YOU WIN!");
+                    showWinDialog();
                 }
             });
 
@@ -288,6 +295,12 @@ public class GamePanel extends JPanel {
             int[] count = {0};  //  -----  mang 1 phan tu de dem so lan nhap nhay bom
             if(result == Events.ClickResult.MINE){
                 gameTimer.stop();
+
+                if(events != null){
+                    events.stopAllTimers();
+                }
+
+                SoundManager.play("src/Sound/mine.wav");
 
                 new javax.swing.Timer(100,i ->{
                     tile.setBackground(tile.getBackground() == Color.RED ? Color.WHITE : Color.RED);
@@ -319,8 +332,8 @@ public class GamePanel extends JPanel {
 
 
     /// -----------  DRAW BORDER  --------
-    private Border createThickFrame(boolean raised, int thickness) {
-        return new javax.swing.border.AbstractBorder() {
+    private Border createThickFrame(boolean raised, int thickness, Color Top, Color Bottom) {
+        return new javax.swing.border.AbstractBorder(){
 
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
@@ -329,16 +342,15 @@ public class GamePanel extends JPanel {
 
                 int t = thickness; // border thickness
 
-                Color light = Color.WHITE;
-                Color dark  = new Color(128, 128, 128);
+
                 Color topColor, leftColor, bottomColor, rightColor;
 
                 if (raised) {
-                    topColor = leftColor = light;
-                    bottomColor = rightColor = dark;
+                    topColor = leftColor = Top;
+                    bottomColor = rightColor = Bottom;
                 } else {
-                    topColor = leftColor = dark;
-                    bottomColor = rightColor = light;
+                    topColor = leftColor = Top;
+                    bottomColor = rightColor = Bottom;
                 }
 
                 // ---VE CANH TREN( hinh thang) ---
@@ -361,14 +373,6 @@ public class GamePanel extends JPanel {
                 g2.fillPolygon(new int[]{x + w, x + w - t, x + w - t, x + w},
                         new int[]{y, y + t, y + h - t, y + h}, 4);
 
-                // --- Ve them cac duong chi o cac khop noi
-                if(raised)
-                    g2.setColor(light);
-                else
-                    g2.setColor(dark);
-
-                g2.drawLine(x, y, x + t, y + t); // top-left
-                g2.drawLine(x + w, y, x + w - t, y + t); // top-right
 
             }
 
@@ -420,7 +424,7 @@ public class GamePanel extends JPanel {
             for(int c = 0; c < board.columns; c++){
                 Tile tile = board.getTile(r, c);
 
-                tile.setFont(new Font("Segoe UI", Font.BOLD, tileSize / 3));
+                tile.setFont(new Font("Segoe UI", Font.BOLD, 3 *tileSize / 4));
             }
         updateUIBoard();
     }
@@ -437,7 +441,7 @@ public class GamePanel extends JPanel {
         clearPreview();
 
         if(!tile.isRevealed()){
-            tile.setBorder(createThickFrame(false, 4));
+            tile.setBorder(createThickFrame(false, 4, new Color(128,128,128) , Color.WHITE));
             tile.setBackground(new Color(220,220,220));
             previewTiles.add(tile);
             return;
@@ -452,7 +456,7 @@ public class GamePanel extends JPanel {
 
                         if(nr>=0 && nr< board.rows && nc>=0 && nc< board.columns)
                             if(!board.getTile(nr, nc).isRevealed()){
-                                board.getTile(nr, nc).setBorder(createThickFrame(false, 4));
+                                board.getTile(nr, nc).setBorder(createThickFrame(false, 4, new Color(128,128,128) , Color.WHITE));
                                 board.getTile(nr, nc).setBackground(new Color(220,220,220));
                                 previewTiles.add(board.getTile(nr, nc));
                             }
@@ -468,7 +472,7 @@ public class GamePanel extends JPanel {
     private void clearPreview(){
         for(Tile t : previewTiles){
             if(!t.isRevealed()){
-                t.setBorder(createThickFrame(true, 5));
+                t.setBorder(createThickFrame(true, 5, Color.WHITE, new Color(128,128,128)));
                 t.setBackground(new Color(192,192,192));
             }
         }
@@ -515,6 +519,79 @@ public class GamePanel extends JPanel {
 
 
 
+    ///  ------- WIN DIALOG WIN
+    private void showWinDialog() {
+        JDialog winDialog = new JDialog(
+                SwingUtilities.getWindowAncestor(this),
+                "VICTORY",
+                Dialog.ModalityType.APPLICATION_MODAL
+        );
+        winDialog.setUndecorated(true); // Bỏ thanh tiêu đề mặc định của Windows
+        winDialog.setSize(400, 300);
+        winDialog.setLocationRelativeTo(this);
+        winDialog.setBackground(new Color(0, 0, 0, 0)); // Làm nền trong suốt để hiện bo góc
+
+        // Panel chính của Dialog
+        JPanel mainPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // Nền kính mờ vàng nhạt cho sang chảnh
+                g2.setColor(new Color(255, 255, 255, 230));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
+
+            }
+        };
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setOpaque(false);
+
+        // Header: Icon Win hoặc Chữ
+        JLabel lblStatus = new JLabel("VICTORY!", SwingConstants.CENTER);
+        lblStatus.setFont(new Font("Arial", Font.BOLD, 45));
+        lblStatus.setForeground(new Color(220, 208, 48));
+        lblStatus.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
+
+        // Thống kê: Thời gian
+        JLabel lblStats = new JLabel("Time: " + timerLabel.getText() + " seconds", SwingConstants.CENTER);
+        lblStats.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+        lblStats.setForeground(new Color(60, 60, 60));
+
+        // Nút bấm
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        btnPanel.setOpaque(false);
+
+        JButton restartBtn = createMenuButton("Play Again");
+        JButton menuBtn = createMenuButton("Menu");
+
+        restartBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            winDialog.dispose();
+            restartGame();
+        });
+
+        menuBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            winDialog.dispose();
+            Window window = SwingUtilities.getWindowAncestor(this);
+            if(window instanceof GameFrame){
+                ((GameFrame) window).showMenu();
+                SoundManager.playBGM("src/Sound/music.wav");
+            }
+        });
+
+        btnPanel.add(restartBtn);
+        btnPanel.add(menuBtn);
+
+        mainPanel.add(lblStatus, BorderLayout.NORTH);
+        mainPanel.add(lblStats, BorderLayout.CENTER);
+        mainPanel.add(btnPanel, BorderLayout.SOUTH);
+
+        winDialog.setContentPane(mainPanel);
+        winDialog.setVisible(true);
+    }
+
+
 
 
 
@@ -554,9 +631,35 @@ public class GamePanel extends JPanel {
     /// --------- MENU BUTTON
     private JButton createMenuButton(String text){
         JButton btn = new JButton(text);
-        btn.setBackground(new Color(192, 192, 192));
+
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        btn.setForeground(new Color(60, 60, 60));
+
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
         btn.setFocusPainted(false);
-        btn.setBorder(createThickFrame(true, 1));
+
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+
+        // hover + click effect
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+
+
+            public void mouseEntered(java.awt.event.MouseEvent e){
+                SoundManager.play("src/Sound/menu_hover.wav");
+
+                btn.setForeground(new Color(220, 208, 48));
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 32));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent e){
+                btn.setForeground(new Color(60, 60, 60));
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
+            }
+
+        });
+
         return btn;
     }
 
@@ -566,7 +669,7 @@ public class GamePanel extends JPanel {
 
     ///  --------- PAUSE MENU
 
-    private void showPauseMenu(){
+    private void showPauseMenu() {
         gameTimer.stop();
         JDialog pauseDialog = new JDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -574,51 +677,82 @@ public class GamePanel extends JPanel {
                 Dialog.ModalityType.APPLICATION_MODAL
         );
 
-        pauseDialog.setSize(300, 300);
+        pauseDialog.setUndecorated(true); // Bỏ viền Windows cho đồng bộ với Win Dialog
+        pauseDialog.setSize(350, 400);
         pauseDialog.setLocationRelativeTo(this);
+        pauseDialog.setBackground(new Color(0, 0, 0, 0)); // Nền trong suốt để bo góc
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 1, 10, 10));
-        panel.setBorder(BorderFactory.
-//                createThickFrame(false, 6),
-                createEmptyBorder(20, 20, 20, 20));
+        // Panel chính với hiệu ứng vẽ bo góc và viền vàng
+        JPanel mainPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+                // Nền trắng mờ (Glassmorphism)
+                g2.setColor(new Color(255, 255, 255, 240));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
+
+            }
+        };
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setOpaque(false);
+
+        // Tiêu đề PAUSED
+        JLabel lblTitle = new JLabel("PAUSED", SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 40));
+        lblTitle.setForeground(new Color(220, 208, 48));
+        lblTitle.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
+
+        // Panel chứa các nút bấm
+        JPanel btnPanel = new JPanel(new GridLayout(3, 1, 15, 15));
+        btnPanel.setOpaque(false);
+        btnPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 40, 50));
 
         JButton resumeBtn = createMenuButton("Resume");
         JButton menuBtn   = createMenuButton("Main Menu");
         JButton exitBtn   = createMenuButton("Exit");
 
-
-        panel.add(resumeBtn);
-        panel.add(menuBtn);
-        panel.add(exitBtn);
-
-        pauseDialog.setContentPane(panel);
-
+        // Action cho các nút
         resumeBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
             gameTimer.start();
             pauseDialog.dispose();
         });
 
-
         menuBtn.addActionListener(e -> {
-            pauseDialog.dispose();
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
 
+            if(events != null){
+                events.stopAllTimers();
+            }
+
+            pauseDialog.dispose();
             Window window = SwingUtilities.getWindowAncestor(this);
             if(window instanceof GameFrame){
                 GameFrame frame = (GameFrame) window;
                 frame.showMenu();
-
-                frame.pack();           // reset size theo preferredSize
+                SoundManager.playBGM("src/Sound/music.wav");
+                frame.pack();
                 frame.setLocationRelativeTo(null);
             }
         });
 
-        exitBtn.addActionListener(e -> System.exit(0));
+        exitBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            System.exit(0);
+        });
 
+        btnPanel.add(resumeBtn);
+        btnPanel.add(menuBtn);
+        btnPanel.add(exitBtn);
+
+        mainPanel.add(lblTitle, BorderLayout.NORTH);
+        mainPanel.add(btnPanel, BorderLayout.CENTER);
+
+        pauseDialog.setContentPane(mainPanel);
         pauseDialog.setVisible(true);
     }
-
 
 
 
@@ -669,12 +803,12 @@ public class GamePanel extends JPanel {
                 //---------- IF TILE IS CLOSING
                 else{
                     tile.setBackground(new Color(192,192,192));
-                    tile.setBorder(createThickFrame(true, 5));
+                    tile.setBorder(createThickFrame(true, 5, Color.WHITE, new Color(128, 128,128)));
                     if(tile.isFlagged()) {
                         tile.setIcon(flagIcon);
                         if (board.gameOver && !tile.isMine()) {
                             tile.setBackground(new Color(240, 70, 70));
-//                            tile.setBorder(null);
+                            tile.setBorder(createThickFrame(true, 5, new Color(240, 100, 100), new Color(195, 25,25)));
                         }
 
                     }
@@ -711,6 +845,10 @@ public class GamePanel extends JPanel {
     public void restartGame() {
         this.board = new Board(board.rows, board.columns, board.minesCount);
         this.events = new Events(board);
+
+        if(events != null){
+            events.stopAllTimers();
+        }
 
         // NỐI LẠI CONTROLLER KHI CHƠI VÁN MỚI
         if (this.controller != null) {

@@ -5,7 +5,8 @@ import java.io.*;
 public class Settings {
 
     public static boolean soundEnabled = true;
-    public static float volume = 0.5f; // 0.0 -> 1.0
+    public static float volume = 0.5f;       // SFX (Tiếng bom, click)
+    public static float musicVolume = 0.5f;  // Music (Nhạc nền) - MỚI
 
     private static final String FILE = "settings.dat";
 
@@ -13,6 +14,7 @@ public class Settings {
         try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(FILE))){
             out.writeBoolean(soundEnabled);
             out.writeFloat(volume);
+            out.writeFloat(musicVolume); // Lưu thêm musicVolume
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -22,11 +24,12 @@ public class Settings {
         try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(FILE))){
             soundEnabled = in.readBoolean();
             volume = in.readFloat();
+            musicVolume = in.readFloat(); // Đọc thêm musicVolume
         }catch(Exception e){
-            // ------ DEFAULT SETTING NEU CHUA CO FILE
+            // DEFAULT SETTING
             soundEnabled = true;
             volume = 0.5f;
+            musicVolume = 0.5f;
         }
     }
 }
-
