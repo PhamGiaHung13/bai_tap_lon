@@ -37,6 +37,7 @@ public class GameController {
 
     public void startSecondChance(Tile bombTile, int difficulty) {
         this.currentBombTile = bombTile;
+        minesPanel.gameTimer.stop();
         JPanel gameUI = null;
 
         // Random từ 0 đến 3
@@ -82,6 +83,7 @@ public class GameController {
             currentBombTile.setRevealed(true);
         }
         backToMines();
+
     }
 
 
@@ -97,26 +99,14 @@ public class GameController {
 
 
 
+
         backToMines();
+        minesPanel.gameTimer.stop();
         minesPanel.handleFinalExplosion(currentBombTile);
 
-//        returnToMainMenu();
     }
 
 
-
-
-    private void returnToMainMenu() {
-        // QUAY VỀ CARD "MENU" CÓ SẴN TRONG FRAME
-        cardLayout.show(mainPanel, "MENU");
-
-        frame.setExtendedState(JFrame.NORMAL);
-        frame.pack(); // Tự về 1200x700 như ông set ở MenuPanel
-        frame.setLocationRelativeTo(null);
-
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
 
     private void backToMines() {
         // QUAY VỀ CARD "GAME" CÓ SẴN TRONG FRAME
@@ -132,8 +122,11 @@ public class GameController {
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
 
+
         mainPanel.revalidate();
         mainPanel.repaint();
+
+        minesPanel.gameTimer.start();
         minesPanel.updateUIBoard();
         minesPanel.requestFocusInWindow();
     }

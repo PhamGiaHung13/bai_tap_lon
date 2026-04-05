@@ -31,7 +31,7 @@ public class GamePanel extends JPanel {
     ImageIcon smileIcon, deadIcon, winIcon, surpriseIcon = getScaledIcon("src/core/Image/surprise.png", 40);
     JLabel timerLabel;
     int time = 0;
-    Timer gameTimer;
+    public Timer gameTimer;
     boolean started = false;
     boolean isHolding = false;
     GameController controller;

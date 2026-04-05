@@ -30,7 +30,7 @@
             String name = JOptionPane.showInputDialog(
                     null,
                     "Welcome to HKL Minesweeper!\nEnter your name bro:",
-                    "Đăng nhập người chơi",
+                    "Login",
                     JOptionPane.QUESTION_MESSAGE
             );
 
@@ -43,7 +43,7 @@
             this.currentPlayer = gameDAO.getOrCreatePlayer(name);
 
             if (this.currentPlayer != null) {
-                System.out.println("Đã đăng nhập thành công: " + currentPlayer.getUsername() + " (ID: " + currentPlayer.getId() + ")");
+                System.out.println("Log in Successful: " + currentPlayer.getUsername() + " (ID: " + currentPlayer.getId() + ")");
             }
         }
 

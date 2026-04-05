@@ -14,14 +14,13 @@ public class SettingsPanel extends JPanel {
     public SettingsPanel(GameFrame frame) {
         setLayout(new GridBagLayout());
 
-        // 1. KHỞI TẠO CÁC COMPONENT TRƯỚC
 
         // ---- TITLE SETTING
         JLabel title = new JLabel("SETTING");
         title.setFont(new Font("Arial", Font.BOLD, 50));
-        title.setForeground(Color.BLACK);
+        title.setForeground(new Color(198, 185, 18));
 
-        // ----------- SOUND TOGGLE (Bật/Tắt âm thanh nói chung)
+        // ----------- SOUND TOGGLE
         JCheckBox soundToggle = new JCheckBox("Enable Sound");
         soundToggle.setForeground(Color.BLACK);
         soundToggle.setFont(new Font("Arial", Font.BOLD, 25));
