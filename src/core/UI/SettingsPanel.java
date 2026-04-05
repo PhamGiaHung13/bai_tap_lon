@@ -45,16 +45,16 @@ public class SettingsPanel extends JPanel {
         // --- BACK BUTTON
         JButton backBtn = createSettingsButton("BACK");
 
-        // 2. KHỞI TẠO BOX (PANEL CHỨA) VÀ LAYOUT
+        // ------BOX
         JPanel box = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Hiệu ứng Glassmorphism (Trắng mờ)
+                // ------- Glassmorphism (Trắng mờ)
                 g2.setColor(new Color(255, 255, 255, 180));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 40, 40);
-                // Viền trắng nhẹ
+
                 g2.setColor(new Color(255, 255, 255, 200));
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 40, 40);
@@ -70,7 +70,6 @@ public class SettingsPanel extends JPanel {
         boxGbc.fill = GridBagConstraints.HORIZONTAL;
         boxGbc.insets = new Insets(10, 0, 10, 0);
 
-        // 3. THÊM CÁC THÀNH PHẦN VÀO BOX THEO THỨ TỰ gridy
         boxGbc.gridy = 0;
         boxGbc.anchor = GridBagConstraints.CENTER;
         box.add(title, boxGbc);
@@ -98,10 +97,9 @@ public class SettingsPanel extends JPanel {
         boxGbc.insets = new Insets(30, 0, 0, 0);
         box.add(backBtn, boxGbc);
 
-        // 4. THÊM BOX VÀO SETTINGSPANEL CHÍNH
         add(box);
 
-        // 5. XỬ LÝ SỰ KIỆN (LISTENERS)
+        // ---------- LISTENERS
         soundToggle.addActionListener(e -> {
             SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             Settings.soundEnabled = soundToggle.isSelected();
@@ -115,7 +113,7 @@ public class SettingsPanel extends JPanel {
 
         musicSlider.addChangeListener(e -> {
             Settings.musicVolume = musicSlider.getValue() / 100f;
-            SoundManager.updateBGMVolume(); // Cập nhật nhạc nền ngay lập tức
+            SoundManager.updateBGMVolume();
             Settings.save();
         });
 
@@ -128,9 +126,7 @@ public class SettingsPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Vẽ background full màn hình
         g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
-        // Lớp overlay tối nhẹ để làm nổi bật Box setting
         g.setColor(new Color(0, 0, 0, 30));
         g.fillRect(0, 0, getWidth(), getHeight());
     }

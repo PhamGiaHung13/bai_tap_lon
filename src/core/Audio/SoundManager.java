@@ -7,7 +7,7 @@ import java.io.File;
 public class SoundManager {
 
     private static Clip backgroundClip; // Giữ lại để có thể tắt nhạc khi vào game
-
+//CLIP = LOA PHAT NHAC
     public static void play(String path){
         if(!Settings.soundEnabled) return;
         try{
@@ -15,7 +15,7 @@ public class SoundManager {
             AudioInputStream in = AudioSystem.getAudioInputStream(file);
             AudioFormat baseFormat = in.getFormat();
 
-            // Tạo định dạng mới "nhẹ" hơn (16-bit, 44100Hz) mà Java chắc chắn đọc được
+            // Tạo định dạng mới "nhẹ" hơn (16-bit, 44100Hz)
             AudioFormat decodedFormat = new AudioFormat(
                     AudioFormat.Encoding.PCM_SIGNED,
                     44100, 16, baseFormat.getChannels(),
@@ -65,7 +65,7 @@ public class SoundManager {
 
             // Chỉnh volume từ Settings
             FloatControl gain = (FloatControl) backgroundClip.getControl(FloatControl.Type.MASTER_GAIN);
-            float dB = (float)(Math.log(Settings.volume) / Math.log(10.0) * 20.0);
+            float dB = (float)(Math.log(Settings.musicVolume) / Math.log(10.0) * 20.0);
             gain.setValue(dB);
 
             backgroundClip.start();
@@ -85,7 +85,6 @@ public class SoundManager {
 
 
     public static void updateBGMVolume() {
-        // Kiểm tra xem backgroundClip có đang tồn tại không
         if (backgroundClip != null && backgroundClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
             try {
                 FloatControl gain = (FloatControl) backgroundClip.getControl(FloatControl.Type.MASTER_GAIN);

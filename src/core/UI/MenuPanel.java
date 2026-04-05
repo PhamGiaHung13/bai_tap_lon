@@ -1,6 +1,7 @@
 package core.UI;
 
 import core.Audio.SoundManager;
+import core.Config.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,9 @@ public class MenuPanel extends JPanel {
         // ----- BACKGROUND
         background = new ImageIcon(getClass().getResource("/core/Image/menu4.png")).getImage();
 
+
         // ----- MUSIC
+        Settings.load();
         SoundManager.playBGM("src/core/Sound/music.wav");
 
 
