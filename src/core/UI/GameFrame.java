@@ -2,6 +2,8 @@
     import javax.swing.*;
 
     import Controller.GameController;
+    import DB.GameDAO;
+    import DB.Player;
     import core.Audio.SoundManager;
     import core.Logic.Board;
 
@@ -20,11 +22,35 @@
         private GameController gameController;
 
 
+        private Player currentPlayer;
+        private GameDAO gameDAO = new GameDAO();
 
+        public void initLogin() {
+            // Hiện cái bảng nhỏ cho người ta nhập tên
+            String name = JOptionPane.showInputDialog(
+                    null,
+                    "Chào mừng đến với HKL Minesweeper!\nNhập tên của bạn để bắt đầu:",
+                    "Đăng nhập người chơi",
+                    JOptionPane.QUESTION_MESSAGE
+            );
 
+            // Nếu người dùng bấm Cancel hoặc để trống, cho tên mặc định là Guest
+            if (name == null || name.trim().isEmpty()) {
+                name = "Guest_" + System.currentTimeMillis() % 1000;
+            }
+
+            // Gọi DAO để kiểm tra: Nếu có tên rồi thì lấy ID, chưa có thì tạo mới
+            this.currentPlayer = gameDAO.getOrCreatePlayer(name);
+
+            if (this.currentPlayer != null) {
+                System.out.println("Đã đăng nhập thành công: " + currentPlayer.getUsername() + " (ID: " + currentPlayer.getId() + ")");
+            }
+        }
 
         ///  --------------- CONSTRUCTOR
         public GameFrame() {
+            initLogin();
+
             setTitle("HKL Minesweeper");//----- dat tieu de
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//--- an nut X thoat game(khong cho game chay ngam)
 
@@ -46,13 +72,13 @@
             menuPanel = new MenuPanel(this);
             difficultyPanel = new DifficultyPanel(this);
             settingsPanel = new SettingsPanel(this);
-            achievementsPanel = new AchievementsPanel(this);
-
+            achievementsPanel = new AchievementsPanel(this, currentPlayer.getId());
 
             mainPanel.add(menuPanel, "MENU");
             mainPanel.add(difficultyPanel, "DIFFICULTY");
             mainPanel.add(settingsPanel, "SETTING");
             mainPanel.add(achievementsPanel, "ACHIEVEMENTS");
+
 
 
             setContentPane(mainPanel);
@@ -76,7 +102,7 @@
                 mainPanel.remove(gamePanel);
             }
 
-            gamePanel = new GamePanel(newBoard);
+            gamePanel = new GamePanel(newBoard, currentPlayer) ;
 
             gameController = new GameController(this, gamePanel);
 
@@ -129,8 +155,9 @@
             cardLayout.show(mainPanel, "SETTING");
         }
 
-        public void showAchievements() {
+        public void showAchievements(){
             cardLayout.show(mainPanel, "ACHIEVEMENTS");
         }
+
 
     }

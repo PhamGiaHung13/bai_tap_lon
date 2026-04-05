@@ -54,4 +54,52 @@ public class GameDAO {
             e.printStackTrace();
         }
     }
+
+
+
+
+    ///  ---- DANG NHAP GAME
+    public Player getOrCreatePlayer(String name) {
+        String querySelect = "SELECT id FROM players WHERE username = ?";
+        String queryInsert = "INSERT INTO players (username) VALUES (?)";
+
+        try (Connection conn = DBContext.getConnection()) {
+            // 1. Kiểm tra xem tên đã tồn tại chưa
+            PreparedStatement ps = conn.prepareStatement(querySelect);
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Player(rs.getInt("id"), name);
+            } else {
+                // 2. Nếu chưa có thì tạo mới
+                PreparedStatement psIns = conn.prepareStatement(queryInsert, Statement.RETURN_GENERATED_KEYS);
+                psIns.setString(1, name);
+                psIns.executeUpdate();
+                ResultSet rsKeys = psIns.getGeneratedKeys();
+                if (rsKeys.next()) return new Player(rsKeys.getInt(1), name);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
+
+
+    ///  ------- LAY KI LUC
+    public java.util.Map<String, Double> getBestTimes(int playerId) {
+        java.util.Map<String, Double> bestTimes = new java.util.HashMap<>();
+        // Câu truy vấn lấy thời gian nhỏ nhất cho mỗi độ khó của 1 người chơi
+        String sql = "SELECT difficulty, MIN(time_seconds) as best FROM game_results " +
+                "WHERE player_id = ? GROUP BY difficulty";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, playerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                bestTimes.put(rs.getString("difficulty"), rs.getDouble("best"));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return bestTimes;
+    }
 }

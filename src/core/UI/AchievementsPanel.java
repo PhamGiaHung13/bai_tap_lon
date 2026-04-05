@@ -1,5 +1,6 @@
 package core.UI;
 
+import DB.GameDAO;
 import core.Audio.SoundManager;
 
 import javax.swing.*;
@@ -8,8 +9,11 @@ import java.awt.*;
 public class AchievementsPanel extends JPanel {
 
     private Image background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
+    private JLabel lblEasy, lblMedium, lblHard;
 
-    public AchievementsPanel(GameFrame frame) {
+
+
+    public AchievementsPanel(GameFrame frame, int playerId) {
         setLayout(new GridBagLayout());
 
         // 1. Tạo Box Kính mờ (Glass Box)
@@ -46,11 +50,19 @@ public class AchievementsPanel extends JPanel {
         glassBox.add(title, gbc);
 
         // 3. Hiển thị kỷ lục (Ví dụ giả lập dữ liệu)
-        gbc.insets = new Insets(5, 0, 5, 0);
-        gbc.gridy = 1; glassBox.add(createRecordLabel("EASY: 00:45s"), gbc);
-        gbc.gridy = 2; glassBox.add(createRecordLabel("MEDIUM: 02:10s"), gbc);
-        gbc.gridy = 3; glassBox.add(createRecordLabel("HARD: 05:30s"), gbc);
+        // Lấy dữ liệu từ Database
+        GameDAO dao = new GameDAO();
+        java.util.Map<String, Double> times = dao.getBestTimes(playerId);
 
+        // Tạo các Label với dữ liệu thật
+        lblEasy = createRecordLabel("EASY: " + formatTime(times.getOrDefault("easy", 0.0)));
+        lblMedium = createRecordLabel("MEDIUM: " + formatTime(times.getOrDefault("medium", 0.0)));
+        lblHard = createRecordLabel("HARD: " + formatTime(times.getOrDefault("hard", 0.0)));
+
+        // Add vào glassBox (thay thế phần dữ liệu giả cũ)
+        gbc.gridy = 1; glassBox.add(lblEasy, gbc);
+        gbc.gridy = 2; glassBox.add(lblMedium, gbc);
+        gbc.gridy = 3; glassBox.add(lblHard, gbc);
         // 4. Nút BACK
         JButton backBtn = createSimpleButton("BACK");
         gbc.gridy = 4;
@@ -63,6 +75,8 @@ public class AchievementsPanel extends JPanel {
         });
 
         add(glassBox);
+
+        System.out.println(times);
     }
 
     // Hàm tạo Label kỷ lục cho đẹp
@@ -100,5 +114,16 @@ public class AchievementsPanel extends JPanel {
         g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         g.setColor(new Color(0, 0, 0, 20)); // Overlay nhẹ cho sâu
         g.fillRect(0, 0, getWidth(), getHeight());
+    }
+
+
+
+
+
+    private String formatTime(double seconds) {
+        if (seconds <= 0) return "--:--s";
+        int m = (int) (seconds / 60);
+        int s = (int) (seconds % 60);
+        return String.format("%02d:%02ds", m, s);
     }
 }

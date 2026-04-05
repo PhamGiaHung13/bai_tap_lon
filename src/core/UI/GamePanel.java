@@ -2,6 +2,7 @@ package core.UI;
 
 import Controller.GameController;
 import DB.GameDAO;
+import DB.Player;
 import core.Audio.SoundManager;
 import core.Logic.*;
 import javax.swing.*;
@@ -32,16 +33,18 @@ public class GamePanel extends JPanel {
     boolean started = false;
     boolean isHolding = false;
     GameController controller;
+    private Player currentPlayer; // Thêm biến này
 
 
 
 /// ---------- CONSTRUCTOR
-    public GamePanel(Board board) {
+    public GamePanel(Board board, Player player) {
 
 
         ///--------------- LAYOUT GAMEPANEL
         this.board = board;
         this.events = new Events(board);
+        currentPlayer = player;
         setLayout(new BorderLayout());//layout theo huong (N W S E)
         this.setBackground(new Color(192, 192, 192));
         this.setBorder(BorderFactory.createCompoundBorder(
@@ -223,7 +226,7 @@ public class GamePanel extends JPanel {
             //-------- HOLD MOUSE
             @Override
             public void mousePressed(java.awt.event.MouseEvent e){
-                if(board.gameOver) return;
+                if(board.gameOver || board.isWin()) return;
 
                 // --------- FACE EMOTION (LEFT CLICK)
                 if(SwingUtilities.isLeftMouseButton(e)){
@@ -272,11 +275,18 @@ public class GamePanel extends JPanel {
 
         //------- ACTION LISTENER (click)
         tile.addActionListener(e -> {
-            gameTimer.start();
+//            gameTimer.start();
 
             // ----- VO HIEU HOA  CLICK
             if(board.gameOver || tile.isFlagged() || board.isWin()){
                 return;
+            }
+
+
+
+            if(!started){
+                gameTimer.start();
+                started = true;
             }
 
             //----- LEFT CLICK
@@ -287,10 +297,17 @@ public class GamePanel extends JPanel {
                 if(board.isWin()){
                     gameTimer.stop();
 
-                    handleWin();
+                    int currentDiff = board.getDifficulty();
+                    int exp = currentDiff * 20;
+                    int coins = currentDiff * 5;
+                    int mastery = 1;
 
-                    SoundManager.play("src/Sound/win_victory.wav");
-                    playWinAnimation();
+
+                    SoundManager.play("src/Sound/BGM_WIN.wav");
+                    playWinAnimation(()->{
+                        showWinDialog(exp, coins , mastery);
+                    });
+                    handleWin();
                 }
             });
 
@@ -523,73 +540,84 @@ public class GamePanel extends JPanel {
 
 
     ///  ------- WIN DIALOG WIN
-    private void showWinDialog() {
+    private void showWinDialog(int exp, int coins, int mastery) {
         JDialog winDialog = new JDialog(
                 SwingUtilities.getWindowAncestor(this),
                 "VICTORY",
                 Dialog.ModalityType.APPLICATION_MODAL
         );
-        winDialog.setUndecorated(true); // Bỏ thanh tiêu đề mặc định của Windows
-        winDialog.setSize(400, 300);
+        winDialog.setUndecorated(true);
+        winDialog.setSize(400, 350); // Tăng chiều cao lên một chút để đủ chỗ chứa thêm chỉ số
         winDialog.setLocationRelativeTo(this);
-        winDialog.setBackground(new Color(0, 0, 0, 0)); // Làm nền trong suốt để hiện bo góc
+        winDialog.setBackground(new Color(0, 0, 0, 0));
 
-        // Panel chính của Dialog
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Nền kính mờ vàng nhạt cho sang chảnh
-                g2.setColor(new Color(255, 255, 255, 230));
+                g2.setColor(new Color(255, 255, 255, 245)); // Đậm hơn tí cho dễ nhìn
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
-
+                g2.dispose();
             }
         };
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setOpaque(false);
 
-        // Header: Icon Win hoặc Chữ
+        // --- 1. HEADER
         JLabel lblStatus = new JLabel("VICTORY!", SwingConstants.CENTER);
         lblStatus.setFont(new Font("Arial", Font.BOLD, 45));
         lblStatus.setForeground(new Color(220, 208, 48));
-        lblStatus.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
+        lblStatus.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 0));
 
-        // Thống kê: Thời gian
-        JLabel lblStats = new JLabel("Time: " + timerLabel.getText() + " seconds", SwingConstants.CENTER);
-        lblStats.setFont(new Font("Segoe UI", Font.PLAIN, 20));
-        lblStats.setForeground(new Color(60, 60, 60));
+        // --- 2. CENTER: Gộp Time và Rewards vào một Panel
+        JPanel centerContent = new JPanel(new GridLayout(4, 1, 5, 5));
+        centerContent.setOpaque(false);
 
-        // Nút bấm
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        JLabel lblStats = new JLabel("Time: " + timerLabel.getText() + "s", SwingConstants.CENTER);
+        lblStats.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblStats.setForeground(new Color(80, 80, 80));
+
+        JLabel expLabel = new JLabel("EXP: +" + exp, SwingConstants.CENTER);
+        expLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        expLabel.setForeground(new Color(50, 150, 50));
+
+        JLabel coinLabel = new JLabel("Coins: +" + coins, SwingConstants.CENTER);
+        coinLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        coinLabel.setForeground(new Color(200, 150, 0));
+
+        JLabel masteryLabel = new JLabel("Mastery: +" + mastery, SwingConstants.CENTER);
+        masteryLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        masteryLabel.setForeground(new Color(138, 43, 226)); // Màu tím cho mastery
+
+        centerContent.add(lblStats);
+        centerContent.add(expLabel);
+        centerContent.add(coinLabel);
+        centerContent.add(masteryLabel);
+
+        // --- 3. SOUTH: BUTTONS
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
         btnPanel.setOpaque(false);
-
         JButton restartBtn = createMenuButton("Play Again");
         JButton menuBtn = createMenuButton("Menu");
 
-        restartBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
-            winDialog.dispose();
-            restartGame();
-        });
-
+        // Action listeners giữ nguyên...
+        restartBtn.addActionListener(e -> { winDialog.dispose(); restartGame(); });
         menuBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
             winDialog.dispose();
             Window window = SwingUtilities.getWindowAncestor(this);
-            if(window instanceof GameFrame){
-                ((GameFrame) window).showMenu();
-                SoundManager.playBGM("src/Sound/music.wav");
-            }
+            if(window instanceof GameFrame) ((GameFrame) window).showMenu();
         });
 
         btnPanel.add(restartBtn);
         btnPanel.add(menuBtn);
 
+        // ADD TẤT CẢ VÀO MAIN PANEL
         mainPanel.add(lblStatus, BorderLayout.NORTH);
-        mainPanel.add(lblStats, BorderLayout.CENTER);
+        mainPanel.add(centerContent, BorderLayout.CENTER);
         mainPanel.add(btnPanel, BorderLayout.SOUTH);
 
+        // CUỐI CÙNG MỚI SET VISIBLE
         winDialog.setContentPane(mainPanel);
         winDialog.setVisible(true);
     }
@@ -597,9 +625,8 @@ public class GamePanel extends JPanel {
 
 
 
-
     /// ---------- WIN ANIMATION
-    private void playWinAnimation(){
+    private void playWinAnimation(Runnable onComplete){
         Timer winTimer = new Timer(120, null);
 
         final boolean[] toggle = {false};
@@ -611,9 +638,11 @@ public class GamePanel extends JPanel {
             for(int r = 0; r < board.rows; r++){
                 for(int c = 0; c < board.columns; c++){
                     Tile tile = board.getTile(r, c);
+                    if(!tile.isRevealed()){
 
-                    if(toggle[0]) tile.setBackground(Color.CYAN);
-                    else tile.setBackground(Color.green);
+                        if (toggle[0]) tile.setBackground(Color.CYAN);
+                        else tile.setBackground(Color.green);
+                    }
                 }
             }
 
@@ -621,6 +650,10 @@ public class GamePanel extends JPanel {
             if(count[0] >= 10) {
                 winTimer.stop();
                 updateUIBoard();
+
+                if(onComplete != null) {
+                    onComplete.run();
+                }
             }
         });
         winTimer.start();
@@ -894,22 +927,13 @@ public class GamePanel extends JPanel {
         double finalTime = (double) time;
 
         // Tính toán thưởng dựa trên level (ví dụ thôi, ông tự chỉnh nhé)
-        int exp = currentDiff * 10;
-        int coins = currentDiff * 2;
+        int exp = currentDiff * 20;
+        int coins = currentDiff * 5;
         int mastery = 1;
+        System.out.println("Player ID: " + currentPlayer.getId());
+        GameDAO dao = new GameDAO();
+        dao.saveGameResult(currentPlayer.getId(), finalTime, exp, coins, mastery, currentDiff);
 
-        new Thread(() -> {
-            try {
-                GameDAO dao = new GameDAO();
-                // Truyền currentDiff (kiểu int) vào đây
-                dao.saveGameResult(1, finalTime, exp, coins, mastery, currentDiff);
-                System.out.println("Data saved successfully!");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        showWinDialog();
     }
 
 

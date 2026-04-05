@@ -3,6 +3,7 @@ package core.Logic;
 import Controller.GameController;
 import core.Audio.SoundManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ public class Events {
     private Board gameBoard;
     private Tile[][] board;
     private GameController controller;
-    private Timer revealTimer;
+    private List<Timer> activeTimers = new ArrayList<>();
 
 
 
@@ -43,12 +44,14 @@ public class Events {
         List<Tile> tilesToReveal = gameBoard.getRevealTiles(r, c);
         final int[] revealedCount = {0};
 
-        revealTimer = new Timer(90, null);
+        Timer timer = new Timer(90, null);
+        activeTimers.add(timer);
 
-        revealTimer.addActionListener(e -> {
+        timer.addActionListener(e -> {
 
             if(gameBoard.gameOver || tilesToReveal.isEmpty()){
-                revealTimer.stop();
+                timer.stop();
+                activeTimers.remove(timer);
                 return;
             }
 
@@ -58,25 +61,29 @@ public class Events {
             if(!t.isRevealed()) {
                 t.setRevealed(true);
                 gameBoard.tilesClicked++;
+                if(onUpdate != null) onUpdate.run();
 
-                revealedCount[0]++;
-
-                int index = Math.min(revealedCount[0], 8);
+                int index = Math.min(++revealedCount[0], 8);
                 SoundManager.play("src/Sound/reveal" + index + ".wav");
 
-                if(onUpdate != null) onUpdate.run();
+                // Nếu hết ô để mở thì dừng
+                if (tilesToReveal.isEmpty()) {
+                    timer.stop();
+                    activeTimers.remove(timer);
+                }
+
             }
         });
-
-        revealTimer.start();
+        timer.start();
     }
 
 
     ///  ---- STOP TIMER
-    public void stopAllTimers(){
-        if(revealTimer != null){
-            revealTimer.stop();
+    public void stopAllTimers() {
+        for (Timer t : activeTimers) {
+            if (t != null) t.stop();
         }
+        activeTimers.clear();
     }
 
 

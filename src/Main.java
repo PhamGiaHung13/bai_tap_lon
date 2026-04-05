@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) {
         //chay tren Thread rieng cua swing
         SwingUtilities.invokeLater(() -> {
-            new GameFrame();
+            GameFrame frame = new GameFrame();
         });
     }
 

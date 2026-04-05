@@ -16,7 +16,6 @@ public class DifficultyPanel extends JPanel {
 
 
         JPanel glassBox = new JPanel() {
-
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -26,25 +25,25 @@ public class DifficultyPanel extends JPanel {
                 g2.dispose();
             }
         };
-
-        glassBox.setPreferredSize(new Dimension(400, 500));
         glassBox.setOpaque(false);
-        glassBox.setLayout(new GridLayout(4,1,20,0));
-        glassBox.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
+        glassBox.setLayout(new GridBagLayout());
+        glassBox.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
-
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.gridx = 0;
 
         JButton easy = createButton("Easy");
         JButton medium = createButton("Medium");
         JButton hard = createButton("Hard");
         JButton back = createButton("Back");
-        back.setBorder(BorderFactory.createEmptyBorder(30, 0,0,0));
 
-        glassBox.add(easy);
-        glassBox.add(medium);
-        glassBox.add(hard);
-
-        glassBox.add(back);
+        gbc.gridy = 0; glassBox.add(easy, gbc);
+        gbc.gridy = 1; glassBox.add(medium, gbc);
+        gbc.gridy = 2; glassBox.add(hard, gbc);
+        gbc.gridy = 3;
+        gbc.insets = new Insets(30, 0, 10, 0);
+        glassBox.add(back, gbc);
 
         add(glassBox);
 
@@ -83,7 +82,7 @@ public class DifficultyPanel extends JPanel {
         JButton btn = new JButton(text);
 
         btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        btn.setForeground(new Color(40, 40, 40));
+        btn.setForeground(Color.black);
         btn.setBackground(new Color(222, 227, 230));
 
 
@@ -100,13 +99,11 @@ public class DifficultyPanel extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent e){
                 SoundManager.play("src/Sound/menu_hover.wav");
                 btn.setForeground(new Color(191, 178, 21)); // glow vàng
-                btn.setFont(new Font("Segoe UI", Font.BOLD, 32));
+//                btn.setFont(new Font("Segoe UI", Font.BOLD, 32));
             }
 
             public void mouseExited(java.awt.event.MouseEvent e){
-                btn.setForeground(new Color(40, 40, 40));
-                btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
-
+                btn.setForeground(Color.black);
             }
 
         });

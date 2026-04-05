@@ -1,5 +1,7 @@
 package core.UI;
 
+import DB.GameDAO;
+import DB.Player;
 import core.Audio.SoundManager;
 
 import javax.swing.*;
@@ -9,12 +11,12 @@ import java.awt.event.MouseEvent;
 public class MenuPanel extends JPanel {
 
     private Image background;
-//    JLabel
-
 
 
 ///  ---------- CONSTRUCTOR
     public MenuPanel(GameFrame frame) {
+
+
 
         setPreferredSize(new Dimension(1200, 700));
 
