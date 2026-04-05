@@ -95,6 +95,8 @@ public class Events {
     public ClickResult clickTile(Tile tile, Runnable onUpdate) {
         if (gameBoard.gameOver || tile.isRevealed()) return ClickResult.SAFE;
 
+
+
         int r = tile.row;
         int c = tile.col;
 
@@ -131,9 +133,15 @@ public class Events {
         // 🎧 SOUND + REVEAL
         if(tile.getMinesAround() > 0){
 
+            // ĐẶT Ở ĐÂY ĐỂ CHECK
+            System.out.println("--- CLICKED ---");
+            System.out.println("Row: " + tile.row + " Col: " + tile.col);
+            System.out.println("Mines Around: " + tile.getMinesAround());
+            System.out.println("Is Mine: " + tile.isMine());
+
             tile.setRevealed(true);
             gameBoard.tilesClicked++;
-
+            System.out.println("O nay co so mìn la: " + tile.getMinesAround());
             SoundManager.play("src/core/Sound/reveal" + tile.getMinesAround() + ".wav");
 
             if(onUpdate != null) onUpdate.run();

@@ -25,6 +25,7 @@ public class Board {
         gameMode(mode);
         initializeBoard();
         setMines();
+        calculateAllNumbers();
     }
 
     public Board() {
@@ -43,6 +44,7 @@ public class Board {
 
         initializeBoard();
         setMines();
+        calculateAllNumbers();
     }
 
     // ======================
@@ -165,10 +167,8 @@ public class Board {
 
             visited[row][col] = true;
 
-            int mines = countMines(row, col);
-            tile.setMinesAround(mines);
-
-             result.add(tile);
+            int mines = tile.getMinesAround();
+            result.add(tile);
 
             if(mines == 0){
                 for(int i=-1;i<=1;i++)
@@ -208,6 +208,18 @@ public class Board {
     //check win
     public boolean isWin(){
         return tilesClicked == (rows * columns - minesCount);
+    }
+
+    ///  ---------DEM SO MINE AROUND CUA TAT CA CAC O
+    public void calculateAllNumbers() {
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < columns; c++) {
+                if (!board[r][c].isMine()) {
+                    int mines = countMines(r, c);
+                    board[r][c].setMinesAround(mines);
+                }
+            }
+        }
     }
 
 }
