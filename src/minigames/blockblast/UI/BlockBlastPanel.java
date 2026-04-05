@@ -33,7 +33,7 @@ public class BlockBlastPanel extends MinigamePanel {
         long timeLimit = 250000 - ((difficulty - 1) * 60000L);
 
         loadResources();
-        playBackgroundMusic("src/minigames/soundtrack.wav");
+        playBackgroundMusic("src/minigames/blockblast/soundtrack.wav");
         initGame(timeLimit, target, difficulty);
     }
 
@@ -47,7 +47,7 @@ public class BlockBlastPanel extends MinigamePanel {
 
     private void loadResources() {
         try {
-            backgroundImage = new ImageIcon(getClass().getResource("bg.png")).getImage();
+            backgroundImage = new ImageIcon("src/minigames/blockblast/bg.png").getImage();
         } catch (Exception e) {
             System.out.println("Không tìm thấy bg.png");
         }

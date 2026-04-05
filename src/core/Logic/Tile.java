@@ -13,6 +13,8 @@ public class Tile extends JButton {
     boolean Flag  = false;
     int minesAround = 0;
 
+    private boolean isExploded = false; // Mặc định là false
+
     public Tile(int r, int c) {
         this.row = r;
         this.col = c;
@@ -47,4 +49,7 @@ public class Tile extends JButton {
     public boolean isFlagged(){return Flag;}
 
     public void setFlagged(boolean flag){Flag = flag;}
+
+    public void setExploded(boolean exploded) { this.isExploded = exploded; }
+    public boolean isExploded() { return isExploded; }
 }

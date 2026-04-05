@@ -305,7 +305,7 @@ public class GamePanel extends JPanel {
                     int mastery = 1;
 
 
-                    SoundManager.play("src/Sound/BGM_WIN.wav");
+                    SoundManager.playBGM("src/Sound/BGM_WIN.wav");
                     playWinAnimation(()->{
                         showWinDialog(exp, coins , mastery);
                     });
@@ -329,6 +329,8 @@ public class GamePanel extends JPanel {
                     count[0]++;
                     if(count[0] > 10) ((Timer)i.getSource()).stop();
                 }).start();
+                SoundManager.playBGM("src/Sound/BGM_lose.wav");
+
 
                 revealAllMines();// ---- hien tat ca bom khi thua
             }
@@ -549,7 +551,7 @@ public class GamePanel extends JPanel {
                 Dialog.ModalityType.APPLICATION_MODAL
         );
         winDialog.setUndecorated(true);
-        winDialog.setSize(400, 350); // Tăng chiều cao lên một chút để đủ chỗ chứa thêm chỉ số
+        winDialog.setSize(400, 350);
         winDialog.setLocationRelativeTo(this);
         winDialog.setBackground(new Color(0, 0, 0, 0));
 
@@ -558,7 +560,7 @@ public class GamePanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 245)); // Đậm hơn tí cho dễ nhìn
+                g2.setColor(new Color(255, 255, 255, 245));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
                 g2.dispose();
             }
@@ -572,7 +574,7 @@ public class GamePanel extends JPanel {
         lblStatus.setForeground(new Color(220, 208, 48));
         lblStatus.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 0));
 
-        // --- 2. CENTER: Gộp Time và Rewards vào một Panel
+        // --- 2. CENTER
         JPanel centerContent = new JPanel(new GridLayout(4, 1, 5, 5));
         centerContent.setOpaque(false);
 
@@ -580,46 +582,40 @@ public class GamePanel extends JPanel {
         lblStats.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblStats.setForeground(new Color(80, 80, 80));
 
-        JLabel expLabel = new JLabel("EXP: +" + exp, SwingConstants.CENTER);
-        expLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        expLabel.setForeground(new Color(50, 150, 50));
-
-        JLabel coinLabel = new JLabel("Coins: +" + coins, SwingConstants.CENTER);
-        coinLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        coinLabel.setForeground(new Color(200, 150, 0));
-
-        JLabel masteryLabel = new JLabel("Mastery: +" + mastery, SwingConstants.CENTER);
-        masteryLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        masteryLabel.setForeground(new Color(138, 43, 226)); // Màu tím cho mastery
-
         centerContent.add(lblStats);
-        centerContent.add(expLabel);
-        centerContent.add(coinLabel);
-        centerContent.add(masteryLabel);
+        centerContent.add(new JLabel("EXP: +" + exp, SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.BOLD, 18)); setForeground(new Color(50, 150, 50)); }});
+        centerContent.add(new JLabel("Coins: +" + coins, SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.BOLD, 18)); setForeground(new Color(200, 150, 0)); }});
+        centerContent.add(new JLabel("Mastery: +" + mastery, SwingConstants.CENTER) {{ setFont(new Font("Segoe UI", Font.BOLD, 18)); setForeground(new Color(138, 43, 226)); }});
 
         // --- 3. SOUTH: BUTTONS
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
         btnPanel.setOpaque(false);
-        JButton restartBtn = createMenuButton("Play Again");
+
+        JButton backToGameBtn = createMenuButton("Back");
         JButton menuBtn = createMenuButton("Menu");
 
-        // Action listeners giữ nguyên...
-        restartBtn.addActionListener(e -> { winDialog.dispose(); restartGame(); });
+        backToGameBtn.addActionListener(e -> {
+            winDialog.dispose();
+
+        });
+
         menuBtn.addActionListener(e -> {
+            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+
             winDialog.dispose();
             Window window = SwingUtilities.getWindowAncestor(this);
             if(window instanceof GameFrame) ((GameFrame) window).showMenu();
+            SoundManager.playBGM("src/Sound/music.wav");
+
         });
 
-        btnPanel.add(restartBtn);
+        btnPanel.add(backToGameBtn);
         btnPanel.add(menuBtn);
 
-        // ADD TẤT CẢ VÀO MAIN PANEL
         mainPanel.add(lblStatus, BorderLayout.NORTH);
         mainPanel.add(centerContent, BorderLayout.CENTER);
         mainPanel.add(btnPanel, BorderLayout.SOUTH);
 
-        // CUỐI CÙNG MỚI SET VISIBLE
         winDialog.setContentPane(mainPanel);
         winDialog.setVisible(true);
     }
@@ -640,7 +636,7 @@ public class GamePanel extends JPanel {
             for(int r = 0; r < board.rows; r++){
                 for(int c = 0; c < board.columns; c++){
                     Tile tile = board.getTile(r, c);
-                    if(!tile.isRevealed()){
+                    if(tile.isRevealed()){
 
                         if (toggle[0]) tile.setBackground(Color.CYAN);
                         else tile.setBackground(Color.green);
@@ -688,12 +684,10 @@ public class GamePanel extends JPanel {
                 SoundManager.play("src/Sound/menu_hover.wav");
 
                 btn.setForeground(new Color(220, 208, 48));
-                btn.setFont(new Font("Segoe UI", Font.BOLD, 32));
             }
 
             public void mouseExited(java.awt.event.MouseEvent e){
                 btn.setForeground(new Color(60, 60, 60));
-                btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
             }
 
         });
@@ -720,7 +714,6 @@ public class GamePanel extends JPanel {
         pauseDialog.setLocationRelativeTo(this);
         pauseDialog.setBackground(new Color(0, 0, 0, 0)); // Nền trong suốt để bo góc
 
-        // Panel chính với hiệu ứng vẽ bo góc và viền vàng
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -820,8 +813,8 @@ public class GamePanel extends JPanel {
 
                         tile.setIcon(bombIcon);
                         tile.setBorder(BorderFactory.createLineBorder(Color.gray));
-                        tile.setBackground(Color.LIGHT_GRAY);
-
+                        if (!tile.isExploded())
+                            tile.setBackground(Color.LIGHT_GRAY);
 
                     //---- IF TILE NOT MINE
                     } else{
@@ -877,6 +870,7 @@ public class GamePanel extends JPanel {
 
     /// --------- RESTART GAME
     public void restartGame() {
+        SoundManager.stopBGM();
         this.board = new Board(board.rows, board.columns, board.minesCount);
         this.events = new Events(board);
 
@@ -936,6 +930,42 @@ public class GamePanel extends JPanel {
         GameDAO dao = new GameDAO();
         dao.saveGameResult(currentPlayer.getId(), finalTime, exp, coins, mastery, currentDiff);
 
+    }
+
+
+    /// ------------- THUA MINIGAME THI CHAY CAI NAY
+    public void handleFinalExplosion(Tile fatalBomb) {
+        if (fatalBomb == null) return;
+
+        // Chạy âm thanh nổ
+        SoundManager.play("src/Sound/DRAGONBOMB.wav");
+
+        // Timer nhấp nháy
+        Timer flashTimer = new Timer(100, null);
+        final int[] count = {0};
+
+        flashTimer.addActionListener(e -> {
+            // Đảo màu giữa Đỏ và Trắng
+            if (count[0] % 2 == 0) {
+                fatalBomb.setBackground(Color.RED);
+                fatalBomb.setRevealed(true); // Đảm bảo nó hiện icon bom
+            } else {
+                fatalBomb.setBackground(Color.WHITE);
+            }
+
+            updateUIBoard(); // Vẽ lại để cập nhật màu
+            count[0]++;
+
+            if (count[0] >= 10) {
+                ((Timer) e.getSource()).stop();
+                fatalBomb.setBackground(Color.RED); // Chốt hạ màu đỏ
+                revealAllMines(); // Sau khi nhấp nháy xong thì hiện toàn bộ bom còn lại
+                updateUIBoard();
+            }
+        });
+
+        flashTimer.start();
+        SoundManager.playBGM("src/Sound/BGM_lose.wav");
     }
 
 

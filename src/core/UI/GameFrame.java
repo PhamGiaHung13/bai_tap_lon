@@ -29,7 +29,7 @@
             // Hiện cái bảng nhỏ cho người ta nhập tên
             String name = JOptionPane.showInputDialog(
                     null,
-                    "Chào mừng đến với HKL Minesweeper!\nNhập tên của bạn để bắt đầu:",
+                    "Welcome to HKL Minesweeper!\nEnter your name bro:",
                     "Đăng nhập người chơi",
                     JOptionPane.QUESTION_MESSAGE
             );

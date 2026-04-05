@@ -86,12 +86,27 @@ public class GameController {
         backToMines();
     }
 
-    public void onMinigameLose() {
-        minesPanel.revealAllMines();
-        backToMines();
 
-        returnToMainMenu();
+
+    public void onMinigameLose() {
+
+        if (currentBombTile != null) {
+            currentBombTile.setExploded(true); // Đánh dấu đây là quả bom gây Game Over
+        }
+
+        minesPanel.getBoard().gameOver = true;
+        minesPanel.revealAllMines();
+
+
+
+        backToMines();
+        minesPanel.handleFinalExplosion(currentBombTile);
+
+//        returnToMainMenu();
     }
+
+
+
 
     private void returnToMainMenu() {
         // QUAY VỀ CARD "MENU" CÓ SẴN TRONG FRAME
