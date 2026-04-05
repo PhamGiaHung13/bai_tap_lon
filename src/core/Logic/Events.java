@@ -5,6 +5,7 @@ import core.Audio.SoundManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import Controller.GameController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +41,6 @@ public class Events {
     }
 
     private void revealWithTimer(int r, int c, Runnable onUpdate){
-
         List<Tile> tilesToReveal = gameBoard.getRevealTiles(r, c);
         final int[] revealedCount = {0};
 
@@ -143,8 +143,5 @@ public class Events {
         }
 
         return ClickResult.SAFE;
-
     }
-
-
 }

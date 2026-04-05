@@ -5,11 +5,13 @@ import DB.GameDAO;
 import DB.Player;
 import core.Audio.SoundManager;
 import core.Logic.*;
+import Controller.GameController;
+
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-
 import java.util.ArrayList;
 
 import static javax.swing.BorderFactory.createEmptyBorder;

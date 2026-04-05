@@ -66,8 +66,8 @@
             }
 
 
-            cardLayout = new CardLayout();
-            mainPanel = new JPanel(cardLayout);
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
 
             menuPanel = new MenuPanel(this);
             difficultyPanel = new DifficultyPanel(this);
@@ -132,9 +132,7 @@
                 gamePanel = null;
             }
 
-
             cardLayout.show(mainPanel, "MENU");
-
 
             mainPanel.revalidate();
             mainPanel.repaint();
