@@ -14,12 +14,12 @@ public class Blockblast {
     int score = 0;//diem
 
     long startTime;//thoi gian bat dau
-    long timeLimit;//thoigian gioi han
+    long timeLimit;//thoi gian gioi han
 
     boolean gameOver = false;
     boolean win = false;
 
-    int targetScore;//diem can dat de thang
+    public int targetScore;//diem can dat de thang
 
     Random rand = new Random();
     //==========

@@ -2,16 +2,13 @@ package core.UI;
 
 import DB.GameDAO;
 import core.Audio.SoundManager;
-
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 public class AchievementsPanel extends JPanel {
 
     private Image background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
-    private JLabel lblEasy, lblMedium, lblHard;
-
-
 
     public AchievementsPanel(GameFrame frame, int playerId) {
         setLayout(new GridBagLayout());
@@ -22,13 +19,9 @@ public class AchievementsPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // Nền trắng mờ (Glassmorphism)
-                g2.setColor(new Color(255, 255, 255, 180));
+                g2.setColor(new Color(255, 255, 255, 190));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 40, 40);
-
-                // Viền sáng
-                g2.setColor(new Color(255, 255, 255, 200));
+                g2.setColor(new Color(255, 255, 255, 220));
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 40, 40);
                 g2.dispose();
@@ -36,37 +29,55 @@ public class AchievementsPanel extends JPanel {
         };
         glassBox.setOpaque(false);
         glassBox.setLayout(new GridBagLayout());
-        glassBox.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+        glassBox.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 0, 10, 0);
         gbc.gridx = 0;
 
-        // 2. Tiêu đề bảng thành tích
-        JLabel title = new JLabel("BEST TIMES");
-        title.setFont(new Font("Arial", Font.BOLD, 45));
-        title.setForeground(new Color(220, 208, 48)); // Màu vàng đồng bộ Title game
+        // 2. Tiêu đề
+        JLabel title = new JLabel("PLAYER ACHIEVEMENTS");
+        title.setFont(new Font("Arial", Font.BOLD, 35));
+        title.setForeground(new Color(220, 208, 48));
         gbc.gridy = 0;
         glassBox.add(title, gbc);
 
-        // 3. Hiển thị kỷ lục (Ví dụ giả lập dữ liệu)
-        // Lấy dữ liệu từ Database
+        // 3. Lấy dữ liệu từ Database
         GameDAO dao = new GameDAO();
-        java.util.Map<String, Double> times = dao.getBestTimes(playerId);
+        Map<String, Object> data = dao.getFullAchievements(playerId);
 
-        // Tạo các Label với dữ liệu thật
-        lblEasy = createRecordLabel("EASY: " + formatTime(times.getOrDefault("easy", 0.0)));
-        lblMedium = createRecordLabel("MEDIUM: " + formatTime(times.getOrDefault("medium", 0.0)));
-        lblHard = createRecordLabel("HARD: " + formatTime(times.getOrDefault("hard", 0.0)));
+        // --- PHẦN 1: HIỂN THỊ CHỈ SỐ TỔNG (EXP, COINS, MASTERY) ---
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+        statsPanel.setOpaque(false);
 
-        // Add vào glassBox (thay thế phần dữ liệu giả cũ)
-        gbc.gridy = 1; glassBox.add(lblEasy, gbc);
-        gbc.gridy = 2; glassBox.add(lblMedium, gbc);
-        gbc.gridy = 3; glassBox.add(lblHard, gbc);
+        statsPanel.add(createStatLabel("EXP: " + data.getOrDefault("total_exp", 0), new Color(46, 204, 113)));
+        statsPanel.add(createStatLabel("COINS: " + data.getOrDefault("total_coins", 0), new Color(241, 196, 15)));
+        statsPanel.add(createStatLabel("MASTERY: " + data.getOrDefault("total_mastery", 0), new Color(155, 89, 182)));
+
+        gbc.gridy = 1;
+        glassBox.add(statsPanel, gbc);
+
+        // Phân cách nhẹ
+        JSeparator sep = new JSeparator();
+        sep.setPreferredSize(new Dimension(300, 2));
+        gbc.gridy = 2;
+        glassBox.add(sep, gbc);
+
+        // --- PHẦN 2: KỶ LỤC THỜI GIAN ---
+        JLabel subTitle = new JLabel("BEST TIMES");
+        subTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        subTitle.setForeground(Color.DARK_GRAY);
+        gbc.gridy = 3;
+        glassBox.add(subTitle, gbc);
+
+        gbc.gridy = 4; glassBox.add(createRecordLabel("EASY: " + formatTime((Double) data.getOrDefault("easy", 0.0))), gbc);
+        gbc.gridy = 5; glassBox.add(createRecordLabel("MEDIUM: " + formatTime((Double) data.getOrDefault("medium", 0.0))), gbc);
+        gbc.gridy = 6; glassBox.add(createRecordLabel("HARD: " + formatTime((Double) data.getOrDefault("hard", 0.0))), gbc);
+
         // 4. Nút BACK
         JButton backBtn = createSimpleButton("BACK");
-        gbc.gridy = 4;
-        gbc.insets = new Insets(30, 0, 10, 0);
+        gbc.gridy = 7;
+        gbc.insets = new Insets(20, 0, 5, 0);
         glassBox.add(backBtn, gbc);
 
         backBtn.addActionListener(e -> {
@@ -75,35 +86,32 @@ public class AchievementsPanel extends JPanel {
         });
 
         add(glassBox);
-
-        System.out.println(times);
     }
 
-    // Hàm tạo Label kỷ lục cho đẹp
-    private JLabel createRecordLabel(String text) {
+    private JLabel createStatLabel(String text, Color color) {
         JLabel label = new JLabel(text);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        label.setForeground(new Color(60, 60, 60)); // Xám đậm chuyên nghiệp
+        label.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        label.setForeground(color);
         return label;
     }
 
-    // Hàm tạo nút Back đồng bộ
+    private JLabel createRecordLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Monospaced", Font.BOLD, 24));
+        label.setForeground(new Color(44, 62, 80));
+        return label;
+    }
+
     private JButton createSimpleButton(String text) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        btn.setForeground(Color.BLACK);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                btn.setForeground(new Color(220, 208, 48));
-            }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                btn.setForeground(Color.BLACK);
-            }
+            public void mouseEntered(java.awt.event.MouseEvent e) { btn.setForeground(new Color(220, 208, 48)); }
+            public void mouseExited(java.awt.event.MouseEvent e) { btn.setForeground(Color.BLACK); }
         });
         return btn;
     }
@@ -112,13 +120,9 @@ public class AchievementsPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
-        g.setColor(new Color(0, 0, 0, 20)); // Overlay nhẹ cho sâu
+        g.setColor(new Color(0, 0, 0, 30));
         g.fillRect(0, 0, getWidth(), getHeight());
     }
-
-
-
-
 
     private String formatTime(double seconds) {
         if (seconds <= 0) return "--:--s";

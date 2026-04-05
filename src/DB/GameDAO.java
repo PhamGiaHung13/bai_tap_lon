@@ -102,4 +102,36 @@ public class GameDAO {
         } catch (Exception e) { e.printStackTrace(); }
         return bestTimes;
     }
+
+
+    // Trong GameDAO.java
+    public java.util.Map<String, Object> getFullAchievements(int playerId) {
+        java.util.Map<String, Object> data = new java.util.HashMap<>();
+
+        // 1. Lấy tổng chỉ số từ bảng player_stats
+        String sqlStats = "SELECT total_experience, total_minecoins, total_mastery FROM player_stats WHERE player_id = ?";
+        // 2. Lấy kỷ lục thời gian từ game_results (giữ nguyên logic cũ)
+        String sqlTimes = "SELECT difficulty, MIN(time_seconds) as best FROM game_results WHERE player_id = ? GROUP BY difficulty";
+
+        try (Connection conn = DBContext.getConnection()) {
+            // Lấy stats
+            PreparedStatement ps1 = conn.prepareStatement(sqlStats);
+            ps1.setInt(1, playerId);
+            ResultSet rs1 = ps1.executeQuery();
+            if (rs1.next()) {
+                data.put("total_exp", rs1.getInt("total_experience"));
+                data.put("total_coins", rs1.getInt("total_minecoins"));
+                data.put("total_mastery", rs1.getInt("total_mastery"));
+            }
+
+            // Lấy times
+            PreparedStatement ps2 = conn.prepareStatement(sqlTimes);
+            ps2.setInt(1, playerId);
+            ResultSet rs2 = ps2.executeQuery();
+            while (rs2.next()) {
+                data.put(rs2.getString("difficulty").toLowerCase(), rs2.getDouble("best"));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return data;
+    }
 }

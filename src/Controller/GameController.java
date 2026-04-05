@@ -44,27 +44,26 @@ public class GameController {
         // Random từ 0 đến 3
         int Number = rand.nextInt(4);
 
-//        try {
-//            switch (Number) {
-//                case 0:
-//                    gameUI = new SudokuPanel(difficulty, this);
-//                    break;
-//                case 1:
-//                    gameUI = new MazePanel(difficulty, this);
-//                    break;
-//                case 2:
-//                    // CHÚ Ý: Đảm bảo đúng tên Class và tham số
-//                    gameUI = new BlockBlastPanel(difficulty, this);
-//                    break;
-//                case 3:
-//                    gameUI = new ChessPanel(difficulty, this);
-//                    break;
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Lỗi khởi tạo Minigame: " + e.getMessage());
-//            // Nếu lỗi game mới, ép quay về Sudoku cho an toàn
-//        }
-        gameUI = new SudokuPanel(difficulty, this);
+        try {
+            switch (Number) {
+                case 0:
+                    gameUI = new SudokuPanel(difficulty, this);
+                    break;
+                case 1:
+                    gameUI = new MazePanel(difficulty, this);
+                    break;
+                case 2:
+                    // CHÚ Ý: Đảm bảo đúng tên Class và tham số
+                    gameUI = new BlockBlastPanel(difficulty, this);
+                    break;
+                case 3:
+                    gameUI = new ChessPanel(difficulty, this);
+                    break;
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khởi tạo Minigame: " + e.getMessage());
+            // Nếu lỗi game mới, ép quay về Sudoku cho an toàn
+        }
 
         if (gameUI != null) {
             mainPanel.add(gameUI, "MINIGAME");
