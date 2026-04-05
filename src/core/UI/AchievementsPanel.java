@@ -94,7 +94,7 @@ public class AchievementsPanel extends JPanel {
         glassBox.add(backBtn, gbc);
 
         backBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
             frame.showMenu();
         });
 

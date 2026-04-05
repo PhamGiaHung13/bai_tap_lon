@@ -90,7 +90,7 @@ public class GamePanel extends JPanel {
 
         faceBtn.setIcon(smileIcon);
         faceBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
             faceBtn.setBorder(createThickFrame(false, 3, new Color(128,128,128) , Color.WHITE));
             if(events != null){
                 events.stopAllTimers();
@@ -205,7 +205,7 @@ public class GamePanel extends JPanel {
     getActionMap().put("pauseGame", new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            SoundManager.play("src/Sound/pause_menu.wav");
+            SoundManager.play("src/core.Sound/pause_menu.wav");
             showPauseMenu();
         }
     });
@@ -240,7 +240,7 @@ public class GamePanel extends JPanel {
                 //--- PUT FLAG (RIGHT CLICK)
                 if(SwingUtilities.isRightMouseButton(e)) {
                     if(tile.isRevealed()) return;
-                    SoundManager.play("src\\Sound\\flag_melee_var1_02.wav");
+                    SoundManager.play("src\\core.Sound\\flag_melee_var1_02.wav");
                     tile.setFlagged(!tile.isFlagged());
                     updateUIBoard();
                 }
@@ -305,7 +305,7 @@ public class GamePanel extends JPanel {
                     int mastery = 1;
 
 
-                    SoundManager.playBGM("src/Sound/BGM_WIN.wav");
+                    SoundManager.playBGM("src/core.Sound/BGM_WIN.wav");
                     playWinAnimation(()->{
                         showWinDialog(exp, coins , mastery);
                     });
@@ -322,14 +322,14 @@ public class GamePanel extends JPanel {
                     events.stopAllTimers();
                 }
 
-                SoundManager.play("src/Sound/DRAGONBOMB.wav");
+                SoundManager.play("src/core.Sound/DRAGONBOMB.wav");
 
                 new javax.swing.Timer(100,i ->{
                     tile.setBackground(tile.getBackground() == Color.RED ? Color.WHITE : Color.RED);
                     count[0]++;
                     if(count[0] > 10) ((Timer)i.getSource()).stop();
                 }).start();
-                SoundManager.playBGM("src/Sound/BGM_lose.wav");
+                SoundManager.playBGM("src/core.Sound/BGM_lose.wav");
 
 
                 revealAllMines();// ---- hien tat ca bom khi thua
@@ -600,12 +600,12 @@ public class GamePanel extends JPanel {
         });
 
         menuBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
 
             winDialog.dispose();
             Window window = SwingUtilities.getWindowAncestor(this);
             if(window instanceof GameFrame) ((GameFrame) window).showMenu();
-            SoundManager.playBGM("src/Sound/music.wav");
+            SoundManager.playBGM("src/core.Sound/music.wav");
 
         });
 
@@ -681,7 +681,7 @@ public class GamePanel extends JPanel {
 
 
             public void mouseEntered(java.awt.event.MouseEvent e){
-                SoundManager.play("src/Sound/menu_hover.wav");
+                SoundManager.play("src/core.Sound/menu_hover.wav");
 
                 btn.setForeground(new Color(220, 208, 48));
             }
@@ -746,13 +746,13 @@ public class GamePanel extends JPanel {
 
         // Action cho các nút
         resumeBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
             gameTimer.start();
             pauseDialog.dispose();
         });
 
         menuBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
 
             if(events != null){
                 events.stopAllTimers();
@@ -763,14 +763,14 @@ public class GamePanel extends JPanel {
             if(window instanceof GameFrame){
                 GameFrame frame = (GameFrame) window;
                 frame.showMenu();
-                SoundManager.playBGM("src/Sound/music.wav");
+                SoundManager.playBGM("src/core.Sound/music.wav");
                 frame.pack();
                 frame.setLocationRelativeTo(null);
             }
         });
 
         exitBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
             System.exit(0);
         });
 
@@ -938,7 +938,7 @@ public class GamePanel extends JPanel {
         if (fatalBomb == null) return;
 
         // Chạy âm thanh nổ
-        SoundManager.play("src/Sound/DRAGONBOMB.wav");
+        SoundManager.play("src/core.Sound/DRAGONBOMB.wav");
 
         // Timer nhấp nháy
         Timer flashTimer = new Timer(100, null);
@@ -965,7 +965,7 @@ public class GamePanel extends JPanel {
         });
 
         flashTimer.start();
-        SoundManager.playBGM("src/Sound/BGM_lose.wav");
+        SoundManager.playBGM("src/core.Sound/BGM_lose.wav");
     }
 
 

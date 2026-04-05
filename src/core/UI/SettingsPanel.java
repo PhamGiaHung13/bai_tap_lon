@@ -22,7 +22,7 @@ public class SettingsPanel extends JPanel {
         title.setForeground(Color.BLACK);
 
         // ----------- SOUND TOGGLE (Bật/Tắt âm thanh nói chung)
-        JCheckBox soundToggle = new JCheckBox("Enable Sound");
+        JCheckBox soundToggle = new JCheckBox("Enable core.Sound");
         soundToggle.setForeground(Color.BLACK);
         soundToggle.setFont(new Font("Arial", Font.BOLD, 25));
         soundToggle.setOpaque(false);
@@ -30,7 +30,7 @@ public class SettingsPanel extends JPanel {
         soundToggle.setSelected(Settings.soundEnabled);
 
         // --- SOUND EFFECTS (SFX) Slider
-        JLabel lblSound = new JLabel("Sound Effects (SFX)");
+        JLabel lblSound = new JLabel("core.Sound Effects (SFX)");
         lblSound.setFont(new Font("Arial", Font.BOLD, 20));
         JSlider soundSlider = new JSlider(0, 100);
         soundSlider.setValue((int) (Settings.volume * 100));
@@ -104,7 +104,7 @@ public class SettingsPanel extends JPanel {
 
         // 5. XỬ LÝ SỰ KIỆN (LISTENERS)
         soundToggle.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
             Settings.soundEnabled = soundToggle.isSelected();
             Settings.save();
         });
@@ -121,7 +121,7 @@ public class SettingsPanel extends JPanel {
         });
 
         backBtn.addActionListener(e -> {
-            SoundManager.play("src/Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
             frame.showMenu();
         });
     }

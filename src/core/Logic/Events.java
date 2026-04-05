@@ -64,7 +64,7 @@ public class Events {
                 if(onUpdate != null) onUpdate.run();
 
                 int index = Math.min(++revealedCount[0], 8);
-                SoundManager.play("src/Sound/reveal" + index + ".wav");
+                SoundManager.play("src/core/core.Sound/reveal" + index + ".wav");
 
                 // Nếu hết ô để mở thì dừng
                 if (tilesToReveal.isEmpty()) {
@@ -134,7 +134,7 @@ public class Events {
             tile.setRevealed(true);
             gameBoard.tilesClicked++;
 
-            SoundManager.play("src/Sound/reveal" + tile.getMinesAround() + ".wav");
+            SoundManager.play("src/core.Sound/reveal" + tile.getMinesAround() + ".wav");
 
             if(onUpdate != null) onUpdate.run();
 
