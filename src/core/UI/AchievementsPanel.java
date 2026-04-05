@@ -5,6 +5,8 @@ import DB.Player; // Đảm bảo import class Player của ông
 import core.Audio.SoundManager;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Map;
 
 public class AchievementsPanel extends JPanel {
@@ -92,9 +94,14 @@ public class AchievementsPanel extends JPanel {
         gbc.gridy = 8;
         gbc.insets = new Insets(20, 0, 5, 0);
         glassBox.add(backBtn, gbc);
-
+        backBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                SoundManager.play("src/core/Sound/menu_hover.wav");
+            }
+        });
         backBtn.addActionListener(e -> {
-            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             frame.showMenu();
         });
 

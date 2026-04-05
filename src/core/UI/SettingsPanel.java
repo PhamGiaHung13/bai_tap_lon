@@ -5,6 +5,7 @@ import core.Config.Settings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class SettingsPanel extends JPanel {
@@ -22,7 +23,7 @@ public class SettingsPanel extends JPanel {
         title.setForeground(Color.BLACK);
 
         // ----------- SOUND TOGGLE (Bật/Tắt âm thanh nói chung)
-        JCheckBox soundToggle = new JCheckBox("Enable core.Sound");
+        JCheckBox soundToggle = new JCheckBox("Enable Sound");
         soundToggle.setForeground(Color.BLACK);
         soundToggle.setFont(new Font("Arial", Font.BOLD, 25));
         soundToggle.setOpaque(false);
@@ -30,7 +31,7 @@ public class SettingsPanel extends JPanel {
         soundToggle.setSelected(Settings.soundEnabled);
 
         // --- SOUND EFFECTS (SFX) Slider
-        JLabel lblSound = new JLabel("core.Sound Effects (SFX)");
+        JLabel lblSound = new JLabel("Sound Effects (SFX)");
         lblSound.setFont(new Font("Arial", Font.BOLD, 20));
         JSlider soundSlider = new JSlider(0, 100);
         soundSlider.setValue((int) (Settings.volume * 100));
@@ -104,7 +105,7 @@ public class SettingsPanel extends JPanel {
 
         // 5. XỬ LÝ SỰ KIỆN (LISTENERS)
         soundToggle.addActionListener(e -> {
-            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             Settings.soundEnabled = soundToggle.isSelected();
             Settings.save();
         });
@@ -121,7 +122,7 @@ public class SettingsPanel extends JPanel {
         });
 
         backBtn.addActionListener(e -> {
-            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             frame.showMenu();
         });
     }
@@ -146,7 +147,10 @@ public class SettingsPanel extends JPanel {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { btn.setForeground(new Color(220, 208, 48)); }
+            public void mouseEntered(MouseEvent e) {
+
+                SoundManager.play("src/core/Sound/menu_hover.wav");
+                btn.setForeground(new Color(220, 208, 48)); }
             public void mouseExited(MouseEvent e) { btn.setForeground(Color.BLACK); }
         });
         return btn;

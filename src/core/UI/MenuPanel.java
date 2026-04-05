@@ -24,7 +24,7 @@ public class MenuPanel extends JPanel {
         background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
 
         // ----- MUSIC
-        SoundManager.playBGM("src/core.Sound/music.wav");
+        SoundManager.playBGM("src/core/Sound/music.wav");
 
 
 
@@ -59,20 +59,20 @@ public class MenuPanel extends JPanel {
 
         /// -----  PLAY -> DIFFICULTY PANEL
         playBtn.addActionListener(e -> {
-            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             frame.showDifficulty();
         });
         settingBtn.addActionListener(e -> {
-            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             frame.showSetting();
         });
         achievementsBtn.addActionListener(e -> {
-            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
 
             frame.showAchievements();
         });
         exitBtn.addActionListener(e -> {
-            SoundManager.play("src/core.Sound/tunetank.com_interface-cursor-click.wav");
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             System.exit(0);
         });
 
@@ -155,7 +155,7 @@ protected void paintComponent(Graphics g) {
 
 
             public void mouseEntered(java.awt.event.MouseEvent e){
-                SoundManager.play("src/core.Sound/menu_hover.wav");
+                SoundManager.play("src/core/Sound/menu_hover.wav");
                 btn.setForeground(new Color(220, 208, 48));
                 btn.setFont(new Font("Segoe UI", Font.BOLD, 32));
             }
