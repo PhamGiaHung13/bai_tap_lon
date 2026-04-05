@@ -28,7 +28,7 @@ public class GamePanel extends JPanel {
     private int tileSize;
     JLabel minesLabel;
     JButton faceBtn;
-    ImageIcon smileIcon, deadIcon, winIcon, surpriseIcon = getScaledIcon("src/Image/surprise.png", 40);
+    ImageIcon smileIcon, deadIcon, winIcon, surpriseIcon = getScaledIcon("src/core/Image/surprise.png", 40);
     JLabel timerLabel;
     int time = 0;
     Timer gameTimer;
@@ -84,9 +84,9 @@ public class GamePanel extends JPanel {
         faceBtn.setBorder(createThickFrame(true, 4, Color.WHITE, new Color(128,128,128)));
         faceBtn.setPreferredSize(new Dimension(200, 60));
 
-        smileIcon = getScaledIcon("src/Image/smile.png", 40);
-        deadIcon = getScaledIcon("src/Image/die.png", 40);
-        winIcon = getScaledIcon("src/Image/cool.png", 40);
+        smileIcon = getScaledIcon("src/core/Image/smile.png", 40);
+        deadIcon = getScaledIcon("src/core/Image/die.png", 40);
+        winIcon = getScaledIcon("src/core/Image/cool.png", 40);
 
         faceBtn.setIcon(smileIcon);
         faceBtn.addActionListener(e -> {
@@ -441,8 +441,8 @@ public class GamePanel extends JPanel {
                 h / board.rows);
 
         // update icon
-        bombIcon = getScaledIcon("src/Image/trump.png", tileSize);
-        flagIcon = getScaledIcon("src/Image/flag.png", tileSize);
+        bombIcon = getScaledIcon("src/core/Image/trump.png", tileSize);
+        flagIcon = getScaledIcon("src/core/Image/flag.png", tileSize);
 
         for(int r = 0; r < board.rows; r++)
             for(int c = 0; c < board.columns; c++){

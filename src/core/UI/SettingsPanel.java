@@ -5,12 +5,11 @@ import core.Config.Settings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class SettingsPanel extends JPanel {
 
-    private Image background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
+    private Image background = new ImageIcon(getClass().getResource("/core/Image/menu4.png")).getImage();
 
     public SettingsPanel(GameFrame frame) {
         setLayout(new GridBagLayout());

@@ -56,7 +56,7 @@
 
             try {
                 // Cách này giúp Java tìm ảnh ngay trong classpath
-                java.net.URL iconURL = getClass().getResource("/Image/favmine.png");
+                java.net.URL iconURL = getClass().getResource("/core/Image/favmine.png");
                 if (iconURL != null) {
                     ImageIcon icon = new ImageIcon(iconURL);
                     this.setIconImage(icon.getImage());

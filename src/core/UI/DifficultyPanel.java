@@ -11,7 +11,7 @@ public class DifficultyPanel extends JPanel {
     private Image background;
 
     public DifficultyPanel(GameFrame frame){
-        background = new ImageIcon(getClass().getResource("/Image/1.png")).getImage();
+        background = new ImageIcon(getClass().getResource("/core/Image/1.png")).getImage();
         setLayout(new GridBagLayout());
 
 

@@ -1,12 +1,9 @@
 package core.UI;
 
-import DB.GameDAO;
-import DB.Player;
 import core.Audio.SoundManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 
 public class MenuPanel extends JPanel {
 
@@ -21,7 +18,7 @@ public class MenuPanel extends JPanel {
         setPreferredSize(new Dimension(1200, 700));
 
         // ----- BACKGROUND
-        background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
+        background = new ImageIcon(getClass().getResource("/core/Image/menu4.png")).getImage();
 
         // ----- MUSIC
         SoundManager.playBGM("src/core/Sound/music.wav");

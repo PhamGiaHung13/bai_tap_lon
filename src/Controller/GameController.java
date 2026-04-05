@@ -126,7 +126,7 @@ public class GameController {
         frame.setExtendedState(JFrame.NORMAL);
         int tileSize = 40;
         int width = minesPanel.getBoard().columns * tileSize + 120;
-        int height = minesPanel.getBoard().rows * tileSize + 195;
+        int height = minesPanel.getBoard().rows * tileSize + 180;
 
         frame.setSize(width, height);
         frame.setResizable(false);

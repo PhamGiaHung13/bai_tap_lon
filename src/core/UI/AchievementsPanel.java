@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AchievementsPanel extends JPanel {
 
-    private Image background = new ImageIcon(getClass().getResource("/Image/menu4.png")).getImage();
+    private Image background = new ImageIcon(getClass().getResource("/core/Image/menu4.png")).getImage();
 
     // Thêm tham số Player vào đây
     public AchievementsPanel(GameFrame frame, Player player) {
