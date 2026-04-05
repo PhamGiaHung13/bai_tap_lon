@@ -83,7 +83,6 @@ public class GameController {
             currentBombTile.setRevealed(true);
         }
         backToMines();
-
     }
 
 

@@ -52,5 +52,4 @@ public class Player {
     public void setTotalMastery(long totalMastery) {
         this.totalMastery = totalMastery;
     }
-// ... (Thêm các getter/setter cho Exp, Coin để hiển thị lên bảng Achievement)
 }

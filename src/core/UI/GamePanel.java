@@ -277,7 +277,6 @@ public class GamePanel extends JPanel {
 
         //------- ACTION LISTENER (click)
         tile.addActionListener(e -> {
-//            gameTimer.start();
 
             // ----- VO HIEU HOA  CLICK
             if(board.gameOver || tile.isFlagged() || board.isWin()){
@@ -595,6 +594,7 @@ public class GamePanel extends JPanel {
         JButton menuBtn = createMenuButton("Menu");
 
         backToGameBtn.addActionListener(e -> {
+            SoundManager.play("src/core/Sound/tunetank.com_interface-cursor-click.wav");
             winDialog.dispose();
 
         });
