@@ -72,7 +72,7 @@
             menuPanel = new MenuPanel(this);
             difficultyPanel = new DifficultyPanel(this);
             settingsPanel = new SettingsPanel(this);
-            achievementsPanel = new AchievementsPanel(this, currentPlayer.getId());
+            achievementsPanel = new AchievementsPanel(this, currentPlayer);
 
             mainPanel.add(menuPanel, "MENU");
             mainPanel.add(difficultyPanel, "DIFFICULTY");

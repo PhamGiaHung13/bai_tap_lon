@@ -81,7 +81,7 @@ public class GamePanel extends JPanel {
         faceBtn = new JButton();
         faceBtn.setFocusPainted(false);
         faceBtn.setBackground(new Color(192, 192, 192));
-        faceBtn.setBorder(createThickFrame(true, 3, Color.WHITE, new Color(128,128,128)));
+        faceBtn.setBorder(createThickFrame(true, 4, Color.WHITE, new Color(128,128,128)));
         faceBtn.setPreferredSize(new Dimension(200, 60));
 
         smileIcon = getScaledIcon("src/Image/smile.png", 40);
@@ -97,7 +97,7 @@ public class GamePanel extends JPanel {
             }
             new Timer(100, ev ->{
                 restartGame();
-                faceBtn.setBorder(createThickFrame(true, 3, Color.WHITE, new Color(128,128,128)));
+                faceBtn.setBorder(createThickFrame(true, 4, Color.WHITE, new Color(128,128,128)));
                 ((Timer) ev.getSource()).stop();
             }).start();
         });
@@ -645,7 +645,7 @@ public class GamePanel extends JPanel {
             }
 
             count[0]++;
-            if(count[0] >= 10) {
+            if(count[0] >= 20) {
                 winTimer.stop();
                 updateUIBoard();
 

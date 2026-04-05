@@ -55,16 +55,20 @@ public class BlockBlastPanel extends MinigamePanel {
 
     private void playBackgroundMusic(String fileName) {
         try {
-            URL url = getClass().getResource(fileName);
-            if (url != null) {
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+
+            java.io.File soundFile = new java.io.File(fileName);
+            if (soundFile.exists()) {
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
                 bgMusic = AudioSystem.getClip();
                 bgMusic.open(audioIn);
                 bgMusic.loop(Clip.LOOP_CONTINUOUSLY);
                 bgMusic.start();
+            } else {
+                System.err.println("Không tìm thấy file nhạc tại: " + fileName);
             }
         } catch (Exception e) {
             System.err.println("Lỗi load nhạc: " + e.getMessage());
+            e.printStackTrace(); // In ra lỗi chi tiết để debug
         }
     }
 
