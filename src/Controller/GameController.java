@@ -1,3 +1,4 @@
+
 package Controller;
 
 import core.Audio.SoundManager;
@@ -38,44 +39,52 @@ public class GameController {
     public void startSecondChance(Tile bombTile, int difficulty) {
         this.currentBombTile = bombTile;
         minesPanel.gameTimer.stop();
+        core.UI.RevivePanel bridge = new core.UI.RevivePanel(bombTile, difficulty, this);
+
+        mainPanel.add(bridge, "REVIVE_BRIDGE");
+        cardLayout.show(mainPanel, "REVIVE_BRIDGE");
+
+        // Cho phép giãn to màn hình để xem ảnh cho đẹp
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setResizable(true);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    public void switchToRandomMinigame(Tile bombTile, int difficulty) {
+        this.currentBombTile = bombTile;
         JPanel gameUI = null;
 
-        // Random từ 0 đến 3
         int Number = rand.nextInt(4);
 
-//        try {
-//            switch (Number) {
-//                case 0:
-//                    gameUI = new SudokuPanel(difficulty, this);
-//                    break;
-//                case 1:
-//                    gameUI = new MazePanel(difficulty, this);
-//                    break;
-//                case 2:
-//                    // CHÚ Ý: Đảm bảo đúng tên Class và tham số
-//                    gameUI = new BlockBlastPanel(difficulty, this);
-//                    break;
-//                case 3:
-//                    gameUI = new ChessPanel(difficulty, this);
-//                    break;
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Lỗi khởi tạo Minigame: " + e.getMessage());
-//            // Nếu lỗi game mới, ép quay về Sudoku cho an toàn
-//        }
-        gameUI = new MazePanel(difficulty, this);
+        // Để test, ông có thể ép cứng 1 game như ông đang làm:
+        // gameUI = new MazePanel(difficulty, this);
+
+        switch (Number) {
+            case 0: gameUI = new SudokuPanel(difficulty, this); break;
+            case 1: gameUI = new MazePanel(difficulty, this); break;
+            case 2: gameUI = new BlockBlastPanel(difficulty, this); break;
+            case 3: gameUI = new ChessPanel(difficulty, this); break;
+        }
 
         if (gameUI != null) {
             mainPanel.add(gameUI, "MINIGAME");
             cardLayout.show(mainPanel, "MINIGAME");
 
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frame.setResizable(true);
+            gameUI.requestFocusInWindow();
             mainPanel.revalidate();
             mainPanel.repaint();
+        }
 
-            // CỰC KỲ QUAN TRỌNG: BlockBlast và Maze cần cái này để nhận phím
+        if (gameUI != null) {
+            mainPanel.add(gameUI, "MINIGAME");
+            cardLayout.show(mainPanel, "MINIGAME");
+
+            // Đảm bảo game phụ nhận được phím điều khiển
             gameUI.requestFocusInWindow();
+
+            mainPanel.revalidate();
+            mainPanel.repaint();
         }
     }
 
